@@ -15,15 +15,26 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    {{-- Tambahan link Transaksi --}}
+                    @auth
+                    <x-nav-link :href="route('transaksi.index')" :active="request()->routeIs('transaksi.index')">
+                        {{ __('Transaksi Kasir') }}
+                    </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Settings Dropdown (Authenticated & Guest) -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                
+                {{-- 1. BAGIAN UNTUK USER YANG SUDAH LOGIN --}}
+                @auth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            {{-- Aman menggunakan Auth::user() karena sudah di dalam blok @auth --}}
+                            <div>{{ Auth::user()->name }}</div> 
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -50,6 +61,17 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                @endauth
+                
+                {{-- 2. BAGIAN UNTUK USER YANG BELUM LOGIN --}}
+                @guest
+                <div class="space-x-4">
+                    <a href="{{ route('login') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition ease-in-out duration-150">Log in</a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition ease-in-out duration-150">Register</a>
+                    @endif
+                </div>
+                @endguest
             </div>
 
             <!-- Hamburger -->
@@ -70,8 +92,17 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            {{-- Tambahan link Transaksi --}}
+            @auth
+            <x-responsive-nav-link :href="route('kasir.transaksi')" :active="request()->routeIs('kasir.transaksi')">
+                {{ __('transaksi') }}
+            </x-responsive-nav-link>
+            @endauth
         </div>
 
+        {{-- 1. BAGIAN RESPONSIVE UNTUK USER YANG SUDAH LOGIN --}}
+        @auth
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
@@ -90,11 +121,26 @@
 
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                                            this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
         </div>
+        @endauth
+        
+        {{-- 2. BAGIAN RESPONSIVE UNTUK USER YANG BELUM LOGIN --}}
+        @guest
+        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+            <x-responsive-nav-link :href="route('login')">
+                {{ __('Log in') }}
+            </x-responsive-nav-link>
+            @if (Route::has('register'))
+            <x-responsive-nav-link :href="route('register')">
+                {{ __('Register') }}
+            </x-responsive-nav-link>
+            @endif
+        </div>
+        @endguest
     </div>
 </nav>

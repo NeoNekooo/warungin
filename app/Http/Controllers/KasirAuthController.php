@@ -27,12 +27,10 @@ class KasirAuthController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
-        // 2. Buat Pengguna Baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => 'kasir', // Pastikan huruf kecil
+            'role' => 'Kasir',
             'password' => Hash::make($request->password),
         ]);
 
@@ -59,7 +57,7 @@ class KasirAuthController extends Controller
             // 3. Pengecekan Role
             $user = Auth::user();
 
-            if ($user->role !== 'kasir') { // Pastikan pengecekan huruf kecil
+            if ($user->role !== 'Kasir') { // Pastikan pengecekan huruf kecil
                 // Jika role BUKAN 'kasir', batalkan login
                 Auth::logout(); 
                 
