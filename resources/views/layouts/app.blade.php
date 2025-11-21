@@ -16,15 +16,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            @auth
-                @if (Auth::user()->role === 'admin')
-                    @include('layouts.sidebar_admin') hayyuk
-                @elseif (Auth::user()->role === 'kasir')
-                    @include('layouts.sidebar_kasir')
-                @endif 
-            @endauth
-
-
+            @include('layouts.sidebar')
 
         </div>
     </body>

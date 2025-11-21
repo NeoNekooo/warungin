@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
             <main class="flex-1 p-6">
             <div class="space-y-6">
                 
@@ -10,4 +12,4 @@
                     {{-- Logo kecil di pojok kartu --}}
                     <img src="{{ asset('image/warungin_logo.png') }}" alt="Logo" class="w-12 h-12 opacity-50">
                 </div>
-            </x-app-layout>
+@endsection
