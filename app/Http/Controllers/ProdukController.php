@@ -6,26 +6,39 @@ use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\StokLog;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProdukController extends Controller
 {
-       public function index()
+    public function index(Request $request)
     {
-        $produks = Produk::all();
-        return view('admin.produk.index', compact('produks'));
-    }
+        // 1. Ambil kata kunci pencarian
+        $search = $request->input('search');
 
-    public function create()
-    {
+        // 2. Query Dasar
+        $query = Produk::with('kategori')->latest();
+
+        // 3. Filter Pencarian
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_produk', 'like', "%{$search}%")
+                  ->orWhere('kode_barcode', 'like', "%{$search}%");
+            });
+        }
+
+        // 4. Pagination & Append Search query string
+        $produks = $query->paginate(10)->appends(['search' => $search]);
         $kategoris = Kategori::all();
-        return view('admin.produk.create', compact('kategoris'));
+
+        return view('admin.produk.index', compact('produks', 'kategoris'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kategori_id'   => 'required|exists:kategoris,id',
-            'kode_barcode'  => 'required|string|unique:produks,kode_barcode',
+            'kategori_id'   => 'required|exists:kategori,kategori_id',
+            'kode_barcode'  => 'nullable|string|unique:produk,kode_barcode',
             'nama_produk'   => 'required|string|max:255',
             'harga_beli'    => 'required|numeric|min:0',
             'harga_jual'    => 'required|numeric|min:0',
@@ -33,28 +46,90 @@ class ProdukController extends Controller
             'satuan'        => 'required|string|max:50',
             'deskripsi'     => 'nullable|string',
             'gambar'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'status'        => 'nullable|in:0,1',
+            'status'        => 'required|in:aktif,nonaktif',
         ]);
 
+        // Generate Kode Produk Unik
+        $validated['kode_produk'] = 'PRD-' . date('ymd') . '-' . strtoupper(Str::random(4));
+
+        // Upload Gambar
+        if ($request->hasFile('gambar')) {
+            $path = $request->file('gambar')->store('produk', 'public');
+            $validated['gambar_url'] = $path;
+        }
+        unset($validated['gambar']); // Bersihkan key gambar
+
+        // Create Data
         $produk = Produk::create($validated);
 
-        StokLog::create([
-        'produk_id'  => $produk->id,
-        'tanggal'    => now(),
-        'tipe'       => 'masuk',           
-        'jumlah'     => $request->stok,
-        'sumber'     => 'Stok awal',
-        'keterangan' => 'Input stok pertama kali',
-        'user_id'    => auth()->id(),
-        ]);
+        // Log Stok Awal
+        if ($request->stok > 0) {
+            StokLog::create([
+                'produk_id'  => $produk->produk_id,
+                'tanggal'    => now(),
+                'tipe'       => 'masuk',
+                'jumlah'     => $request->stok,
+                'sumber'     => 'Stok Awal',
+                'keterangan' => 'Input stok pertama kali',
+                'user_id'    => auth()->id(),
+            ]);
+        }
 
         return redirect()->route('produk.index')->with('success', 'Produk Berhasil ditambahkan');
+    }
 
+    // Note: Method 'edit' tidak dipakai karena kita pakai Modal di index, 
+    // tapi dibiarkan ada untuk fallback jika perlu.
+    public function edit($id)
+    {
+        $produk = Produk::findOrFail($id);
+        $kategoris = Kategori::all();
+        return view('admin.produk.index', compact('produks', 'kategoris')); // Redirect ke index saja
+    }
+
+    public function update(Request $request, $id)
+    {
+        $produk = Produk::findOrFail($id);
+
+        $validated = $request->validate([
+            'kategori_id'   => 'required|exists:kategori,kategori_id',
+            // Unique validation ignore ID saat ini
+            'kode_barcode'  => 'nullable|string|unique:produk,kode_barcode,'.$produk->produk_id.',produk_id',
+            'nama_produk'   => 'required|string|max:255',
+            'harga_beli'    => 'required|numeric|min:0',
+            'harga_jual'    => 'required|numeric|min:0',
+            'satuan'        => 'required|string|max:50',
+            'deskripsi'     => 'nullable|string',
+            'gambar'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'status'        => 'required|in:aktif,nonaktif',
+            // Stok biasanya tidak diupdate langsung di sini untuk menjaga integritas log, 
+            // tapi jika simpel diperbolehkan:
+            'stok'          => 'nullable|integer|min:0',
+        ]);
+
+        if ($request->hasFile('gambar')) {
+            if ($produk->gambar_url && Storage::disk('public')->exists($produk->gambar_url)) {
+                Storage::disk('public')->delete($produk->gambar_url);
+            }
+            $path = $request->file('gambar')->store('produk', 'public');
+            $validated['gambar_url'] = $path;
+        }
+        unset($validated['gambar']);
+
+        $produk->update($validated);
+
+        return redirect()->route('produk.index')->with('success', 'Data Produk berhasil diperbarui');
     }
 
     public function destroy($id)
     {
-        $produk = Produk::destroy($id);
+        $produk = Produk::findOrFail($id);
+        
+        if ($produk->gambar_url && Storage::disk('public')->exists($produk->gambar_url)) {
+            Storage::disk('public')->delete($produk->gambar_url);
+        }
+
+        $produk->delete();
 
         return redirect()->route('produk.index')->with('success', 'Data Produk berhasil dihapus');
     }

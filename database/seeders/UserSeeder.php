@@ -11,15 +11,26 @@ class UserSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
-        // Membuat pengguna Admin
-        User::create([
-            'name' => 'Admin Kasir',
-            'email' => 'admin@gmail.com',
-            'role' => 'kasir',
-            // Gunakan password default "password123". Hash::make akan mengacaknya.
-            'password' => Hash::make('password123'), 
-        ]);
-    }
+public function run(): void
+{
+    User::create([
+        'nama' => 'Super Admin',
+        'username' => 'admin',
+        'password' => Hash::make('admin123'),
+        'role' => 'admin',
+        'email' => 'admin@warungin.com',
+        'no_hp' => '08123456789',
+        'status' => 1
+    ]);
+
+    User::create([
+        'nama' => 'Riri Kasir',
+        'username' => 'riri',
+        'password' => Hash::make('riri123'),
+        'role' => 'kasir',
+        'email' => 'riri@warungin.com',
+        'no_hp' => '08987654321',
+        'status' => 1
+    ]);
+}
 }
