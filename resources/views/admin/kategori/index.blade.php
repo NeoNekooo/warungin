@@ -24,10 +24,12 @@
         </div>
 
         <div class="flex gap-3 z-10">
+            @role('admin')
             <button onclick="openModal('modalAdd')" class="group bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center font-medium">
                 <i class="ri-add-line mr-2 text-lg group-hover:rotate-90 transition-transform"></i> 
                 Tambah Kategori
             </button>
+            @endrole
         </div>
     </div>
 
@@ -126,6 +128,9 @@
                 </form>
             </div>
         </div>
+    </div>
+    <div class="px-6 py-4 bg-white border-t border-gray-100">
+        {{ $kategoris->links() }}
     </div>
 </div>
 

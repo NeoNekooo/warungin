@@ -9,10 +9,12 @@
 
     {{-- Helper Active --}}
     @php
-        function isActive($route) {
-            return request()->routeIs($route)
-                ? 'bg-blue-100 text-blue-700 font-semibold shadow-sm'
-                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
+        if (! function_exists('isActive')) {
+            function isActive($route) {
+                return request()->routeIs($route)
+                    ? 'bg-blue-100 text-blue-700 font-semibold shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
+            }
         }
     @endphp
 
@@ -107,40 +109,40 @@
 
 
 
-        {{-- ================= KASIR ONLY ================= --}}
-        @if (Auth::user()->role === 'kasir')
+        {{-- ================= KASIR / OWNER ================= --}}
+        @hasanyrole(['kasir','owner'])
             <div class="text-xs uppercase font-bold text-gray-400 mt-6 mb-1 tracking-wider">
                 Operasional Kasir
             </div>
-
             <a href="{{ route('pos.index') }}" class="flex items-center px-4 py-2 rounded-lg transition {{ isActive('pos.index') }}">
-                <i class="fas fa-cash-register mr-3 w-4"></i> Transaksi Baru
+                <i class="fas fa-cash-register mr-3 w-4"></i> Transaksi
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
-                <i class="fas fa-history mr-3 w-4"></i> Riwayat Transaksi
+            <a href="{{ route('produk.index') }}" class="flex items-center px-4 py-2 rounded-lg transition {{ isActive('produk.index') }}">
+                <i class="fas fa-box-open mr-3 w-4"></i> Produk
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
-                <i class="fas fa-search mr-3 w-4"></i> Lihat Produk
+            <a href="{{ route('transaksi_detail.index') }}" class="flex items-center px-4 py-2 rounded-lg transition {{ isActive('transaksi_detail.index') }}">
+                <i class="fas fa-info-circle mr-3 w-4"></i> Transaksi Detail
             </a>
 
-            <a href="#" class="flex items-center px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
-                <i class="fas fa-address-book mr-3 w-4"></i> Lihat Pelanggan
+            <a href="{{ route('pelanggan.index') }}" class="flex items-center px-4 py-2 rounded-lg transition {{ isActive('pelanggan.index') }}">
+                <i class="fas fa-users mr-3 w-4"></i> Pelanggan
             </a>
-        @endif
+
+        @endhasanyrole
 
     </nav>
 
     {{-- Bottom Section --}}
     <div class="p-4 border-t border-gray-200 bg-white">
 
-        {{-- Laporan Admin Only --}}
-        @if (Auth::user()->role === 'admin')
-        <a href="#" class="flex items-center px-4 py-2 mb-2 rounded-lg text-gray-700 hover:bg-gray-100">
+        {{-- Laporan: Admin / Kasir / Owner --}}
+        @hasanyrole(['admin','kasir','owner'])
+        <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-2 mb-2 rounded-lg text-gray-700 hover:bg-gray-100">
             <i class="fas fa-chart-line mr-3 w-4"></i> Laporan & Analitik
         </a>
-        @endif
+        @endhasanyrole
 
         {{-- Logout --}}
         <form method="POST" action="{{ route('logout') }}">

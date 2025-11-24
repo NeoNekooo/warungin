@@ -15,9 +15,21 @@ class TransaksiController extends Controller
      */
     public function index()
     {
-        $transaksi = Transaksi::orderBy('tanggal', 'desc')->get();
+        $transaksi = Transaksi::orderBy('tanggal', 'desc')->paginate(20);
 
         return view('admin.transaksi.index', compact('transaksi'));
+    }
+
+    public function __construct()
+    {
+        // Allow admin, kasir and owner to manage transaksi actions
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user) return abort(403);
+            $role = $user->role;
+            $allowed = ['admin', 'kasir', 'owner'];
+            return $next($request);
+        });
     }
 
     public function create()

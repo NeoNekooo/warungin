@@ -11,6 +11,24 @@ use Illuminate\Support\Str;
 
 class ProdukController extends Controller
 {
+    public function __construct()
+    {
+        // Restrict create/update/delete (management) to admin and kasir
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user) return abort(403);
+            $role = $user->role;
+            $allowed = ['admin', 'kasir'];
+            // If route is a mutating action, ensure role is allowed
+            $action = $request->route()->getActionMethod();
+            if (in_array($action, ['store', 'update', 'destroy'])) {
+                if (!in_array($role, $allowed)) {
+                    return abort(403);
+                }
+            }
+            return $next($request);
+        })->only(['store', 'update', 'destroy']);
+    }
     public function index(Request $request)
     {
         // 1. Ambil kata kunci pencarian

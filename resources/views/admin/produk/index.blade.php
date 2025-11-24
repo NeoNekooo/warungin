@@ -51,9 +51,11 @@
 
         <!-- Bagian Kanan: Tombol Tambah -->
         <div class="w-full md:w-auto">
+            @hasanyrole(['admin','owner'])
             <button onclick="openModal('modalAdd')" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center font-medium text-sm">
                 <i class="ri-add-line mr-2 text-lg"></i> Tambah Produk
             </button>
+            @endhasanyrole
         </div>
     </div>
 
@@ -134,12 +136,13 @@
             </div>
 
             <!-- Tombol Aksi -->
+            @hasanyrole(['admin','owner'])
             <div class="grid grid-cols-2 divide-x divide-gray-100 border-t border-gray-100 bg-gray-50">
                 <button onclick='openEditModal(@json($produk))' class="py-2 text-center text-xs font-medium text-gray-600 hover:text-blue-600 hover:bg-white transition-colors flex items-center justify-center w-full">
                     <i class="ri-pencil-line mr-1"></i> Edit
                 </button>
                 
-                <form action="{{ route('produk.destroy', $produk->produk_id) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')" class="w-full">
+                <form action="{{ route('produk.destroy', $produk->produk_id) }}" method="POST" data-confirm="Hapus produk ini?" class="w-full">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-full py-2 text-center text-xs font-medium text-gray-600 hover:text-red-600 hover:bg-white transition-colors flex items-center justify-center">
@@ -147,6 +150,12 @@
                     </button>
                 </form>
             </div>
+            @else
+            <div class="grid grid-cols-2 divide-x divide-gray-100 border-t border-gray-100 bg-gray-50">
+                <div class="py-2 text-center text-xs font-medium text-gray-400 flex items-center justify-center">&nbsp;</div>
+                <div class="py-2 text-center text-xs font-medium text-gray-400 flex items-center justify-center">&nbsp;</div>
+            </div>
+            @endhasanyrole
 
         </div>
         <!-- CARD ITEM END -->

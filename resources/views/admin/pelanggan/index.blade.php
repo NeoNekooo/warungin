@@ -9,7 +9,9 @@
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800">Pelanggan</h2>
                     </div>
+                    @role('admin')
                     <a href="{{ route('pelanggan.create') }}" class="bg-blue-500 hover:bg-blue-600 p-2 text-white rounded-lg transition">Tambah Pelanggan</a>
+                    @endrole
                 </div>
 
             <div class="overflow-x-auto rounded-lg shadow-lg bg-white p-4">
@@ -53,6 +55,10 @@
             </tbody>
         </table>
     </div>
+            </div>
+
+            <div class="mt-4">
+                {{ $pelanggans->links() }}
             </div>
 
 @endsection

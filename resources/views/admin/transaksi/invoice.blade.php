@@ -67,7 +67,7 @@
         <div class="text-xs text-gray-500">Simpan atau cetak bukti ini.</div>
         <div>
             <button id="print-button" onclick="window.print()" class="px-3 py-1 bg-gray-800 text-white rounded text-sm mr-2">Print</button>
-            <a href="{{ route('transaksi.index') }}" class="px-3 py-1 border rounded text-sm">Kembali</a>
+            <a href="{{ route('pos.index') }}" class="px-3 py-1 border rounded text-sm">Kembali</a>
         </div>
     </div>
 </div>
@@ -84,8 +84,11 @@
 
 <style>
     @media print {
-        body * { visibility: hidden; }
-        .print\:p-0, .print\:shadow-none { visibility: visible; }
+        /* Hide everything by default, then show the invoice container AND its children */
+        body * { visibility: hidden !important; }
+        .print\:p-0, .print\:shadow-none { visibility: visible !important; }
+        /* Ensure all descendant elements of the invoice container are visible in print */
+        .print\:p-0 *, .print\:shadow-none * { visibility: visible !important; }
         .print\:p-0 { padding: 0 !important; }
         .print\:shadow-none { box-shadow: none !important; }
         .max-w-sm { width: 100% !important; margin: 0 auto; }

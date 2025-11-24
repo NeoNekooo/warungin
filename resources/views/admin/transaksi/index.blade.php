@@ -26,7 +26,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
+                        <form action="{{ route('transaksi.destroy', $t->transaksi_id) }}" method="POST" data-confirm="Hapus transaksi ini?">
                         <p class="text-2xl font-bold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</p>
                         <p class="text-sm text-gray-500">Pelanggan: {{ optional($t->pelanggan)->nama ?? 'Umum' }}</p>
                     </div>
@@ -46,7 +46,7 @@
                             <a href="{{ route('midtrans.checkout', $t->transaksi_id) }}" class="px-3 py-1 bg-blue-600 text-white rounded text-sm">Bayar</a>
                         @endif
 
-                        <form action="{{ route('transaksi.destroy', $t->transaksi_id) }}" method="POST" onsubmit="return confirm('Hapus transaksi ini?');">
+                        <form action="{{ route('transaksi.destroy', $t->transaksi_id) }}" method="POST" data-confirm="Hapus transaksi ini?">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded text-sm">Hapus</button>
@@ -58,19 +58,8 @@
             <div class="col-span-full text-center text-gray-500 p-6 bg-white rounded shadow">Belum ada transaksi.</div>
         @endforelse
     </div>
+    <div class="mt-6">
+        {{ $transaksi->links() }}
+    </div>
 </div>
 @endsection
-<x-app-layout>
-            <main class="flex-1 p-6">
-            <div class="space-y-6">
-                
-                <!-- Kartu Sambutan -->
-                <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Transaksi</h2>
-                        <p class="text-gray-500">Ringkasan Penjualan & Pengeluaran Hari Ini</p>
-                    </div>
-                    {{-- Logo kecil di pojok kartu --}}
-                    <img src="{{ asset('image/warungin_logo.png') }}" alt="Logo" class="w-12 h-12 opacity-50">
-                </div>
-            </x-app-layout>

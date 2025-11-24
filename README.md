@@ -64,3 +64,14 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Quick Setup Notes
+
+- If uploaded product images are not showing, ensure the storage symlink exists:
+
+```powershell
+cd hanzi
+php artisan storage:link
+```
+
+This creates the `public/storage` link so `asset('storage/...')` URLs resolve correctly.

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Pembayaran;
 
 class MidtransController extends Controller
 {
@@ -16,6 +17,14 @@ class MidtransController extends Controller
     public function __construct(MidtransService $midtrans)
     {
         $this->midtrans = $midtrans;
+        // Require auth and specific roles for all actions except notification (which is public webhook)
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user) return abort(403);
+            $allowed = ['admin', 'kasir', 'owner'];
+            if (!in_array($user->role, $allowed)) return abort(403);
+            return $next($request);
+        })->except(['notification']);
     }
 
     // Show a simple checkout page with Snap integration
@@ -84,6 +93,28 @@ class MidtransController extends Controller
                     $transaksi->midtrans_raw = $raw;
                     $transaksi->save();
 
+                        // Try to update pembayaran record if exists (match by referensi order_id or transaksi_id)
+                        try {
+                            $pay = null;
+                            if ($orderId) {
+                                $pay = Pembayaran::where('referensi', $orderId)->first();
+                            }
+                            if (!$pay) {
+                                $pay = Pembayaran::where('transaksi_id', $transaksi->transaksi_id)->first();
+                            }
+                            if ($pay) {
+                                // Update reference and amount when available
+                                $pay->referensi = $notification->transaction_id ?? $pay->referensi;
+                                if (isset($notification->gross_amount)) {
+                                    $pay->jumlah = (float) $notification->gross_amount;
+                                }
+                                // set metode to midtrans
+                                $pay->metode = 'midtrans';
+                                $pay->save();
+                            }
+                        } catch (\Throwable $e) {
+                            Log::warning('Failed to reconcile pembayaran for order: ' . $orderId, ['error' => $e->getMessage()]);
+                        }
                         // If transaction is now completed, generate invoice HTML for record
                         if ($newStatus === 'selesai') {
                             $items = DB::table('transaksi_detail')->where('transaksi_id', $transaksi->transaksi_id)->get();

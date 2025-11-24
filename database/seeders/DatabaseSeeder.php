@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // Panggil UserSeeder untuk mengisi data admin
         $this->call([
             UserSeeder::class, // <-- Pastikan ini memanggil UserSeeder
+            \Database\Seeders\RoleUserSeeder::class,
         ]);
     }
 }

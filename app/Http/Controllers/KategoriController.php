@@ -9,8 +9,18 @@ class KategoriController extends Controller
 {
     public function index()
     {
-        $kategoris = Kategori::all();
+        $kategoris = Kategori::orderBy('nama_kategori')->paginate(20);
         return view('admin.kategori.index', compact('kategoris'));
+    }
+
+    public function __construct()
+    {
+        // Only admin can manage categories
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user || $user->role !== 'admin') return abort(403);
+            return $next($request);
+        })->except(['index']);
     }
 
     public function create()

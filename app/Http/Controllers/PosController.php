@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\Promo;
 use App\Models\Transaksi;
+use App\Models\Pembayaran;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,13 @@ class PosController extends Controller
     public function __construct(MidtransService $midtrans)
     {
         $this->midtrans = $midtrans;
+        // Only allow authenticated users with roles admin/kasir/owner to use POS
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user) return abort(403);
+            if (!in_array($user->role, ['admin','kasir','owner'])) return abort(403);
+            return $next($request);
+        });
     }
 
     public function index()
@@ -50,7 +58,14 @@ class PosController extends Controller
     public function search(Request $request)
     {
         $q = $request->query('q', '');
-        $products = Produk::where('nama_produk', 'like', "%{$q}%")->limit(20)->get(['produk_id','nama_produk','harga_jual','stok']);
+        $products = Produk::where('nama_produk', 'like', "%{$q}%")->limit(20)->get(['produk_id','nama_produk','harga_jual','stok','gambar_url']);
+
+        // Convert gambar_url to full accessible URL (storage link) for the POS frontend
+        $products = $products->map(function($p) {
+            $p->gambar_url = $p->gambar_url ? asset('storage/' . $p->gambar_url) : null;
+            return $p;
+        });
+
         return response()->json($products);
     }
 
@@ -131,6 +146,36 @@ class PosController extends Controller
             }
         }
 
+        // Generate an order id for gateway payments (and store it in midtrans_raw)
+        $orderId = 'order-' . $transaksi->transaksi_id . '-' . time();
+        $raw = $transaksi->midtrans_raw ?? [];
+        $raw = is_array($raw) ? $raw : (is_string($raw) ? json_decode($raw, true) : []);
+        $raw['order_id'] = $orderId;
+        $transaksi->midtrans_raw = $raw;
+        $transaksi->save();
+
+        // Create a Pembayaran record for immediate/tunai payments or pending gateway payments
+        try {
+            if ($transaksi->metode_bayar === 'tunai') {
+                Pembayaran::create([
+                    'transaksi_id' => $transaksi->transaksi_id,
+                    'metode' => 'tunai',
+                    'jumlah' => $transaksi->nominal_bayar ?? $transaksi->total,
+                    'referensi' => null,
+                ]);
+            } else {
+                // For gateway payments (midtrans/qris) create a pending pembayaran with order reference
+                Pembayaran::create([
+                    'transaksi_id' => $transaksi->transaksi_id,
+                    'metode' => ($data['metode_bayar'] === 'qris') ? 'qris' : 'midtrans',
+                    'jumlah' => 0,
+                    'referensi' => $orderId,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // don't break the flow if payment record cannot be created
+        }
+
         // If cash, we already marked selesai: generate invoice file
         if ($transaksi->status === 'selesai') {
             $items = DB::table('transaksi_detail')->where('transaksi_id', $transaksi->transaksi_id)->get();
@@ -141,14 +186,6 @@ class PosController extends Controller
         }
 
         // For Midtrans (qris/transfer) create snap token via MidtransService and return it
-        $orderId = 'order-' . $transaksi->transaksi_id . '-' . time();
-        // store order_id in midtrans_raw for later matching
-        $raw = $transaksi->midtrans_raw ?? [];
-        $raw = is_array($raw) ? $raw : (is_string($raw) ? json_decode($raw, true) : []);
-        $raw['order_id'] = $orderId;
-        $transaksi->midtrans_raw = $raw;
-        $transaksi->save();
-
         $snapToken = $this->midtrans->createSnapToken([
             'order_id' => $orderId,
             'gross_amount' => (float) $transaksi->total,

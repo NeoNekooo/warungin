@@ -1,47 +1,77 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.guest')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('content')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+<div class="bg-white w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <!-- KIRI -->
+    <div class="hidden md:flex w-1/2 bg-blue-600 text-white flex-col items-center justify-center p-10">
+        <img src="/image/warungin_logo.png" class="h-28 w-28 rounded-full shadow-lg border-4 border-white mb-6">
+        
+        <h2 class="text-3xl font-bold tracking-wide">WARUNGIN</h2>
+        <p class="mt-3 text-center text-blue-100 max-w-xs leading-relaxed">
+            Sistem kasir modern untuk usaha warung Indonesia — cepat, mudah dan efisien.
+        </p>
+    </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+    <!-- KANAN -->
+    <div class="w-full md:w-1/2 p-10 bg-white">
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+            Login
+        </h1>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ $errors->first() }}
+            </div>
+        @endif
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+        <form method="POST" action="{{ route('login') }}" class="space-y-6">
+            @csrf
+
+            <div>
+                <label class="font-semibold text-gray-700 text-sm">Email</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    value="{{ old('email') }}"
+                    class="w-full mt-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                    required
+                >
+            </div>
+
+            <div>
+                <label class="font-semibold text-gray-700 text-sm">Password</label>
+                <input 
+                    type="password" 
+                    name="password"
+                    class="w-full mt-2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                    required
+                >
+            </div>
+
+            <div class="flex items-center justify-between">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="remember" class="rounded border-gray-300">
+                    <span class="text-sm text-gray-700">Remember me</span>
+                </label>
+
+                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:underline">
+                    Forgot Password?
                 </a>
-            @endif
+            </div>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+            <button 
+                type="submit"
+                class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+                Log In
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+@endsection

@@ -23,20 +23,24 @@
         document.getElementById('pay-button').addEventListener('click', function () {
             window.snap.pay(snapToken, {
                 onSuccess: function(result){
-                    alert('Pembayaran sukses');
+                    if (typeof showToast === 'function') showToast('Pembayaran sukses', 'success');
+                    else console.log('Pembayaran sukses');
                     console.log(result);
                     // optionally redirect or call server to mark transaksi
                 },
                 onPending: function(result){
-                    alert('Pembayaran pending');
+                    if (typeof showToast === 'function') showToast('Pembayaran pending', 'info');
+                    else console.log('Pembayaran pending');
                     console.log(result);
                 },
                 onError: function(result){
-                    alert('Pembayaran error');
+                    if (typeof showToast === 'function') showToast('Pembayaran error', 'error');
+                    else console.log('Pembayaran error');
                     console.log(result);
                 },
                 onClose: function(){
-                    alert('Anda menutup popup pembayaran tanpa menyelesaikan pembayaran');
+                    if (typeof showToast === 'function') showToast('Anda menutup popup pembayaran tanpa menyelesaikan pembayaran', 'error');
+                    else console.log('Popup pembayaran ditutup');
                 }
             });
         });

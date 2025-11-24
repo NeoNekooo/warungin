@@ -7,9 +7,18 @@ use App\Models\Pelanggan;
 
 class PelangganController extends Controller
 {
+    public function __construct()
+    {
+        // Only admin may create/update/delete pelanggan
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user || $user->role !== 'admin') return abort(403);
+            return $next($request);
+        })->only(['create','store','edit','update','destroy']);
+    }
      public function index()
     {
-        $pelanggans = Pelanggan::all();
+        $pelanggans = Pelanggan::orderBy('nama_pelanggan')->paginate(20);
         return view('admin.pelanggan.index', compact('pelanggans'));
     }
 

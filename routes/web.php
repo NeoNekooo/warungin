@@ -24,13 +24,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth', 'role:admin')->group(function () {
+Route::middleware('auth', 'role:admin|kasir|owner')->group(function () {
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard'); 
     })->name('admin.dashboard');
 
     Route::resource('transaksi', TransaksiController::class);
     Route::resource('pembayaran', PembayaranController::class);
+    Route::post('/pembayaran/{pembayaran}/reconcile', [PembayaranController::class, 'reconcile'])->name('pembayaran.reconcile');
     Route::resource('stok_log', StokLogController::class);
     Route::resource('kategori', KategoriController::class);
     Route::resource('transaksi_detail', TransaksiDetailController::class);
@@ -44,6 +45,10 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::get('/midtrans/checkout/{transaksi}', [MidtransController::class, 'checkout'])->name('midtrans.checkout');
     // Invoice view for transaksi (admin)
     Route::get('/transaksi/{transaksi}/invoice', [TransaksiController::class, 'invoice'])->name('transaksi.invoice');
+
+    // Reports
+    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/pdf', [App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.pdf');
 
 
 });

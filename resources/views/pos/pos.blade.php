@@ -41,37 +41,39 @@
                 <div class="col-span-12 xl:col-span-3 lg:col-span-4 order-2 lg:order-1">
                     @php $promos = isset($promos) ? $promos : collect(); @endphp
                     @if($promos->isNotEmpty())
-                        <div class="space-y-3">
-                            <h3 class="font-bold text-gray-700 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                                Promo
-                            </h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                                @foreach($promos as $promo)
-                                    @php
-                                        $pDiscount = $promo->discount ?? ($promo->diskon ?? null);
-                                        $pPercent = $promo->percent ?? ($promo->percentage ?? null);
-                                    @endphp
-                                    <div class="promo-card group relative bg-white border border-dashed border-orange-300 rounded-lg p-4 cursor-pointer hover:bg-orange-50 hover:border-orange-500 transition-all shadow-sm"
-                                         data-promo-id="{{ $promo->id }}" 
-                                         data-name="{{ $promo->name ?? 'Promo' }}" 
-                                         data-discount="{{ $pDiscount }}" 
-                                         data-percent="{{ $pPercent }}">
-                                        
-                                        <div class="absolute -left-2 top-1/2 -mt-2 w-4 h-4 bg-gray-100 rounded-full"></div>
-                                        <div class="absolute -right-2 top-1/2 -mt-2 w-4 h-4 bg-gray-100 rounded-full"></div>
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 h-full">
+                            <div class="space-y-4">
+                                <h3 class="font-bold text-gray-700 flex items-center gap-2 pb-2 border-b border-gray-100">
+                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                    Promo Tersedia
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 max-h-[500px] overflow-y-auto pr-1">
+                                    @foreach($promos as $promo)
+                                        @php
+                                            $pDiscount = $promo->discount ?? ($promo->diskon ?? null);
+                                            $pPercent = $promo->percent ?? ($promo->percentage ?? null);
+                                        @endphp
+                                        <div class="promo-card group relative bg-orange-50/50 border border-dashed border-orange-300 rounded-lg p-4 cursor-pointer hover:bg-orange-50 hover:border-orange-500 transition-all shadow-sm"
+                                             data-promo-id="{{ $promo->id }}" 
+                                             data-name="{{ $promo->name ?? 'Promo' }}" 
+                                             data-discount="{{ $pDiscount }}" 
+                                             data-percent="{{ $pPercent }}">
+                                            
+                                            <div class="absolute -left-2 top-1/2 -mt-2 w-4 h-4 bg-white rounded-full border-r border-orange-200"></div>
+                                            <div class="absolute -right-2 top-1/2 -mt-2 w-4 h-4 bg-white rounded-full border-l border-orange-200"></div>
 
-                                        <div class="flex justify-between items-start pl-2">
-                                            <div>
-                                                <h4 class="font-bold text-gray-800 text-sm group-hover:text-orange-600">{{ $promo->name }}</h4>
-                                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $promo->description }}</p>
-                                            </div>
-                                            <div class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">
-                                                @if($pPercent) {{ $pPercent }}% @else Rp{{ number_format($pDiscount/1000) }}k @endif
+                                            <div class="flex justify-between items-start pl-2">
+                                                <div>
+                                                    <h4 class="font-bold text-gray-800 text-sm group-hover:text-orange-600">{{ $promo->name }}</h4>
+                                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $promo->description }}</p>
+                                                </div>
+                                                <div class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">
+                                                    @if($pPercent) {{ $pPercent }}% @else Rp{{ number_format($pDiscount/1000) }}k @endif
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -420,12 +422,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('clear-cart').addEventListener('click', () => {
-        if(state.cart.length > 0 && confirm('Kosongkan keranjang?')) {
-            state.cart = [];
-            state.selectedPromo = null;
-            renderCart();
-            document.querySelectorAll('.promo-card').forEach(c => c.classList.remove('ring-2', 'ring-orange-500', 'bg-orange-50'));
-            showToast('Keranjang dikosongkan');
+        if(state.cart.length > 0) {
+            // Use global promise-based confirm dialog
+            confirmDialog('Kosongkan keranjang?').then(ok => {
+                if(!ok) return;
+                state.cart = [];
+                state.selectedPromo = null;
+                renderCart();
+                document.querySelectorAll('.promo-card').forEach(c => c.classList.remove('ring-2', 'ring-orange-500', 'bg-orange-50'));
+                showToast('Keranjang dikosongkan');
+            });
         }
     });
 
@@ -461,6 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- PAYMENT LOGIC ---
+    let originalText = '';
     els.btnBayar.addEventListener('click', async () => {
         if(state.cart.length === 0) return;
 
@@ -477,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
             total_bayar: 0 // Backend calculation is safer
         };
 
-        const originalText = els.btnBayar.innerHTML;
+        originalText = els.btnBayar.innerHTML;
         els.btnBayar.disabled = true;
         els.btnBayar.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
 

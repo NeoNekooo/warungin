@@ -8,6 +8,7 @@
             <div class="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">Stok Log</h2>
+                    <p class="text-sm text-gray-500">Riwayat perubahan stok (masuk/keluar)</p>
                 </div>
             </div>
 
@@ -46,6 +47,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="mt-4">
+                {{ $stokLogs->links() }}
             </div>
         </div>
     </main>
