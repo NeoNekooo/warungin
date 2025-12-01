@@ -25,7 +25,7 @@
         @if(isset($items) && $items->count())
             @foreach($items as $it)
                 <div class="flex justify-between py-1 border-b border-dashed border-gray-100 pb-1">
-                    <div class="text-gray-700">{{ $it->produk_id ? 'Produk #'.$it->produk_id : 'Item' }}</div>
+                    <div class="text-gray-700">{{ $it->nama_produk ?? ($it->produk_id ? 'Produk #'.$it->produk_id : 'Item') }}</div>
                     <div class="text-gray-700">Rp {{ number_format($it->subtotal,0,',','.') }}</div>
                 </div>
             @endforeach

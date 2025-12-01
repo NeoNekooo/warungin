@@ -29,6 +29,34 @@ class ProdukController extends Controller
             return $next($request);
         })->only(['store', 'update', 'destroy']);
     }
+
+    /**
+     * Generate a unique barcode string for new products (AJAX endpoint).
+     */
+    public function generateBarcode()
+    {
+        try {
+            // Attempt to generate a numeric-ish barcode and ensure uniqueness
+            $attempts = 0;
+            do {
+                // Compose a human-friendly numeric barcode starting with 'WG' then timestamp + 3 random digits
+                $code = 'WG' . strval(time()) . str_pad((string)random_int(0, 999), 3, '0', STR_PAD_LEFT);
+                $attempts++;
+                if ($attempts > 50) break; // safety fallback
+            } while (Produk::where('kode_barcode', $code)->exists());
+
+            if (Produk::where('kode_barcode', $code)->exists()) {
+                // unexpected duplicate after many attempts
+                \Log::warning('generateBarcode: failed to create a unique kode_barcode after attempts', ['code' => $code, 'attempts' => $attempts]);
+                return response()->json(['message' => 'Gagal membuat kode barcode (duplikat). Silakan coba lagi.'], 500);
+            }
+
+            return response()->json(['kode_barcode' => $code]);
+        } catch (\Throwable $e) {
+            \Log::error('generateBarcode: exception while generating barcode', ['err' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['message' => 'Terjadi kesalahan saat membuat kode barcode. ' . $e->getMessage()], 500);
+        }
+    }
     public function index(Request $request)
     {
         // 1. Ambil kata kunci pencarian

@@ -54,7 +54,7 @@
                     <label class="block text-sm font-medium text-gray-700">Metode Bayar</label>
                     <select name="metode_bayar" class="mt-1 block w-full border rounded p-2" required>
                         <option value="tunai">Tunai</option>
-                        <option value="qris">QRIS</option>
+                        <option value="qris">QRIS   </option>
                         <option value="transfer">Transfer</option>
                     </select>
                 </div>

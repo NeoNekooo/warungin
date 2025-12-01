@@ -41,6 +41,9 @@ Route::middleware('auth', 'role:admin|kasir|owner')->group(function () {
     // Promo management
     Route::resource('promos', PromoController::class);
 
+    // Generate a new unique barcode string for product creation (AJAX)
+    Route::get('/produk/generate-barcode', [ProdukController::class, 'generateBarcode'])->name('produk.generateBarcode');
+
     // Midtrans checkout for a transaksi (admin may trigger a payment checkout)
     Route::get('/midtrans/checkout/{transaksi}', [MidtransController::class, 'checkout'])->name('midtrans.checkout');
     // Invoice view for transaksi (admin)

@@ -7,67 +7,82 @@
     $snapUrl = $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
 @endphp
 
-<div class="flex h-[calc(100vh-theme(spacing.16))] bg-gray-100 overflow-hidden font-sans">
+<div class="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased">
     
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
-        <div class="bg-white border-b px-6 py-4 flex items-center justify-between shrink-0 z-10 shadow-sm">
+        <div class="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between shrink-0 z-10 shadow-sm">
+            
             <div>
-                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Warungin POS</h1>
-                <p class="text-xs text-gray-500">Kasir: {{ auth()->user()->name ?? 'Admin' }}</p>
+                <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">Warungin POS</h1>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    Kasir: <span class="font-medium text-gray-700">{{ auth()->user()->name ?? 'Admin' }}</span>
+                </p>
             </div>
             
-            <div class="relative w-full max-w-lg mx-4">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
+            <div class="relative w-full max-w-lg mx-6">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                    <svg class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
                 <input id="search" type="text" placeholder="Cari Produk / Scan Barcode (F2)" 
-                    class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow bg-gray-50 focus:bg-white" autofocus>
-                <button id="search-clear" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 hidden">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    class="w-full pl-10 pr-12 py-2 border border-indigo-300 rounded-lg 
+                    focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 
+                    text-sm text-gray-700 placeholder-gray-400 font-medium bg-white shadow-sm transition"
+                    autofocus>
+                <button id="search-clear" 
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 transition hidden">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
 
-            <div class="flex items-center space-x-2">
-                <a href="{{ route('admin.dashboard') }}" class="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition" title="Dashboard">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <div>
+                <a href="{{ route('admin.dashboard') }}"
+                    class="p-2.5 text-indigo-500 hover:bg-indigo-600 hover:text-white rounded-lg transition shadow-sm"
+                    title="Dashboard">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                 </a>
             </div>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 scroll-smooth bg-gray-100" id="main-scroll">
+        <div class="flex-1 overflow-y-auto p-6 scroll-smooth bg-gray-50" id="main-scroll">
             <div class="grid grid-cols-12 gap-6">
                 
                 <div class="col-span-12 xl:col-span-3 lg:col-span-4 order-2 lg:order-1">
                     @php $promos = isset($promos) ? $promos : collect(); @endphp
                     @if($promos->isNotEmpty())
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 h-full">
+                        <div class="bg-white p-5 rounded-xl shadow-lg border border-orange-100 h-full">
                             <div class="space-y-4">
-                                <h3 class="font-bold text-gray-700 flex items-center gap-2 pb-2 border-b border-gray-100">
-                                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                <h3 class="text-lg font-extrabold text-orange-600 flex items-center gap-2 pb-2 border-b-2 border-orange-100">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                                     Promo Tersedia
                                 </h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 max-h-[500px] overflow-y-auto pr-1">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar">
                                     @foreach($promos as $promo)
                                         @php
                                             $pDiscount = $promo->discount ?? ($promo->diskon ?? null);
                                             $pPercent = $promo->percent ?? ($promo->percentage ?? null);
                                         @endphp
-                                        <div class="promo-card group relative bg-orange-50/50 border border-dashed border-orange-300 rounded-lg p-4 cursor-pointer hover:bg-orange-50 hover:border-orange-500 transition-all shadow-sm"
+                                        <div class="promo-card group relative bg-orange-50 border border-dashed border-orange-300 rounded-lg p-3 cursor-pointer hover:bg-orange-100 hover:border-orange-500 transition-all shadow-sm transform hover:scale-[1.01]"
                                              data-promo-id="{{ $promo->id }}" 
                                              data-name="{{ $promo->name ?? 'Promo' }}" 
                                              data-discount="{{ $pDiscount }}" 
                                              data-percent="{{ $pPercent }}">
                                             
-                                            <div class="absolute -left-2 top-1/2 -mt-2 w-4 h-4 bg-white rounded-full border-r border-orange-200"></div>
-                                            <div class="absolute -right-2 top-1/2 -mt-2 w-4 h-4 bg-white rounded-full border-l border-orange-200"></div>
+                                            <div class="absolute -left-2 top-1/2 -mt-2 w-3.5 h-3.5 bg-white rounded-full border border-orange-200"></div>
+                                            <div class="absolute -right-2 top-1/2 -mt-2 w-3.5 h-3.5 bg-white rounded-full border border-orange-200"></div>
 
-                                            <div class="flex justify-between items-start pl-2">
+                                            <div class="flex justify-between items-start pl-1">
                                                 <div>
-                                                    <h4 class="font-bold text-gray-800 text-sm group-hover:text-orange-600">{{ $promo->name }}</h4>
-                                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $promo->description }}</p>
+                                                    <h4 class="font-bold text-gray-800 text-sm group-hover:text-orange-700">{{ $promo->name }}</h4>
+                                                    <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">{{ $promo->description }}</p>
                                                 </div>
-                                                <div class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">
+                                                <div class="bg-orange-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-full shadow-md">
                                                     @if($pPercent) {{ $pPercent }}% @else Rp{{ number_format($pDiscount/1000) }}k @endif
                                                 </div>
                                             </div>
@@ -82,8 +97,8 @@
                 <div class="col-span-12 xl:col-span-9 lg:col-span-8 order-1 lg:order-2">
                     <div id="loading-skeleton" class="hidden grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                          @for($i=0; $i<8; $i++)
-                            <div class="bg-white rounded-xl p-4 shadow-sm animate-pulse h-64">
-                                <div class="bg-gray-200 h-32 w-full rounded-lg mb-4"></div>
+                            <div class="bg-white rounded-xl p-3 shadow-lg animate-pulse h-64">
+                                <div class="bg-gray-200 h-36 w-full rounded-lg mb-3"></div>
                                 <div class="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
                                 <div class="bg-gray-200 h-4 w-1/2 rounded"></div>
                             </div>
@@ -93,102 +108,147 @@
                     <div id="product-list" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                         </div>
                     
-                    <div id="empty-state" class="hidden text-center py-20">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-200 mb-4">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <div id="empty-state" class="hidden text-center py-16">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
+                            <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900">Produk tidak ditemukan</h3>
-                        <p class="text-gray-500">Coba kata kunci lain.</p>
+                        <h3 class="text-lg font-bold text-gray-900">Produk tidak ditemukan</h3>
+                        <p class="text-gray-500 mt-1 text-sm">Coba kata kunci lain atau periksa kategori produk.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <aside class="w-96 bg-white border-l shadow-xl flex flex-col shrink-0 z-20 h-full">
-        <div class="p-5 border-b flex justify-between items-center bg-gray-50">
+    <aside class="w-96 bg-white border-l border-gray-100 shadow-xl flex flex-col shrink-0 z-20 h-full">
+        
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
             <div>
-                <h2 class="font-bold text-lg text-gray-800">Keranjang</h2>
-                <span class="text-xs text-gray-500 font-mono">ID: #{{ date('ymdHi') }}</span>
+                <h2 class="font-extrabold text-xl text-indigo-700">Keranjang Belanja</h2>
+                <span class="text-xs text-gray-500 font-mono mt-0.5 block">ID Transaksi: **#{{ date('ymdHi') }}**</span>
             </div>
-            <button id="clear-cart" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded transition" title="Kosongkan">
+            <button id="clear-cart" class="text-red-500 hover:text-white bg-red-50 hover:bg-red-600 p-2 rounded-lg transition duration-200 shadow-sm" title="Kosongkan Keranjang">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 space-y-1" id="cart-items">
+        <div class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar" id="cart-items">
+            <div class="text-center text-gray-400 py-8 text-sm italic">
+                Keranjang kosong. Tambahkan produk!
             </div>
+        </div>
 
-        <div class="p-5 bg-gray-50 border-t space-y-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="p-5 bg-gray-50 border-t border-gray-100 space-y-3 shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.05)]">
             
-            <div id="promo-badge" class="hidden flex justify-between items-center bg-green-100 border border-green-200 text-green-800 px-3 py-2 rounded text-sm">
+            <div id="promo-badge" class="hidden flex justify-between items-center bg-green-50 border border-green-300 text-green-800 px-3 py-2 rounded-lg text-sm font-semibold shadow-inner">
                 <span class="flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                    <span id="applied-promo-name">Promo</span>
+                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span id="applied-promo-name">Promo Terpasang</span>
                 </span>
-                <button id="clear-promo" class="text-xs hover:underline text-green-700 font-bold">Hapus</button>
+                <button id="clear-promo" class="text-xs hover:underline text-green-700 font-bold ml-3">Hapus</button>
             </div>
 
-            <div class="space-y-1 text-sm text-gray-600">
+            <div class="space-y-1 text-sm text-gray-700">
                 <div class="flex justify-between">
-                    <span>Subtotal</span>
-                    <span id="subtotal" class="font-mono">Rp 0</span>
+                    <span class="font-medium">Subtotal</span>
+                    <span id="subtotal" class="font-mono font-semibold text-gray-800">Rp 0</span>
                 </div>
                 <div class="flex justify-between text-green-600">
-                    <span>Diskon</span>
-                    <span id="diskon" class="font-mono">- Rp 0</span>
+                    <span class="font-medium">Diskon</span>
+                    <span id="diskon" class="font-mono font-semibold">- Rp 0</span>
                 </div>
                 <div class="flex justify-between">
-                    <span>Pajak (PPN)</span> 
-                    <span id="pajak" class="font-mono">Rp 0</span>
+                    <span class="font-medium">Pajak (PPN)</span> 
+                    <span id="pajak" class="font-mono font-semibold text-gray-800">Rp 0</span>
                 </div>
             </div>
 
-            <div class="border-t border-dashed border-gray-300 pt-3">
+            <div class="border-t border-dashed border-indigo-200 pt-3">
                 <div class="flex justify-between items-end">
-                    <span class="font-bold text-gray-800">Total</span>
-                    <span id="total" class="text-2xl font-extrabold text-indigo-700 font-mono">Rp 0</span>
+                    <span class="font-extrabold text-xl text-gray-900">TOTAL</span>
+                    <span id="total" class="text-3xl font-extrabold text-indigo-700 font-mono tracking-wider">Rp 0</span>
                 </div>
             </div>
 
             <div class="mt-4">
-                <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">Metode Bayar</label>
+                <label class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2 block">Metode Bayar</label>
                 <div class="grid grid-cols-2 gap-2 mb-3">
                     <label class="cursor-pointer">
                         <input type="radio" name="pay_method" value="tunai" class="peer sr-only" checked>
-                        <div class="text-center py-2 border rounded peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-50 transition text-sm font-medium">
+                        <div class="text-center py-2.5 border-2 border-gray-200 rounded-lg peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-100 transition duration-150 text-sm font-bold shadow-sm">
                             💵 Tunai
                         </div>
                     </label>
                     <label class="cursor-pointer">
                         <input type="radio" name="pay_method" value="qris" class="peer sr-only">
-                        <div class="text-center py-2 border rounded peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-50 transition text-sm font-medium">
+                        <div class="text-center py-2.5 border-2 border-gray-200 rounded-lg peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-100 transition duration-150 text-sm font-bold shadow-sm">
                             📱 QRIS
                         </div>
                     </label>
                 </div>
+
+                <div class="mt-3">
+                    <label class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2 block">Nominal Bayar</label>
+                    <input 
+                        type="number" 
+                        id="bayar"
+                        name="nominal_bayar"
+                        class="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-lg font-bold focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition shadow-inner"
+                        placeholder="Masukkan nominal bayar"
+                    >
+                </div>
+
+                <div class="mt-3 mb-4">
+                    <label class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2 block">Kembalian</label>
+                    <input 
+                        type="text" 
+                        id="kembalian"
+                        name="kembalian"
+                        class="w-full border-2 border-green-500 rounded-lg px-3 py-2 bg-green-50 text-green-700 text-xl font-extrabold shadow-md"
+                        placeholder="Kembalian"
+                        readonly
+                    >
+                </div>
                 
-                <button id="btn-bayar" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold py-3.5 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all flex justify-center items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span>Proses Pembayaran</span>
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                <button id="btn-bayar" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900 text-white font-extrabold text-lg py-3 px-4 rounded-lg shadow-xl hover:shadow-indigo-500/50 transition-all duration-300 flex justify-center items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span>Proses Pembayaran (Enter)</span>
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </button>
             </div>
         </div>
     </aside>
 </div>
 
-<div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 hidden transition-all duration-300 pointer-events-none">
-    <div id="toast-body" class="bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
+<div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 hidden opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toast-body" class="bg-gray-900/95 backdrop-blur-sm text-white px-6 py-2 rounded-full shadow-xl ring-2 ring-white/20 flex items-center gap-2">
         <span id="toast-icon"></span>
-        <span id="toast-msg" class="font-medium text-sm"></span>
+        <span id="toast-msg" class="font-semibold text-sm"></span>
     </div>
 </div>
 
 <script src="{{ $snapUrl }}" data-client-key="{{ $clientKey }}"></script>
 
 <script>
+
 document.addEventListener('DOMContentLoaded', () => {
     
+       // === INPUT BAYAR & KEMBALIAN ===
+    const bayarInput = document.getElementById('bayar');
+    const kembalianInput = document.getElementById('kembalian');
+    const totalElm = document.getElementById('total'); // ambil elemen total
+
+    bayarInput.addEventListener('input', function () {
+        // Ambil total langsung dari UI (contoh: "Rp 10.000")
+        let totalText = totalElm.textContent.replace(/[^\d]/g, '');
+        let total = parseInt(totalText) || 0;
+
+        let bayar = parseInt(this.value) || 0;
+        let kembalian = bayar - total;
+
+        kembalianInput.value = kembalian >= 0 
+            ? "Rp " + kembalian.toLocaleString('id-ID')
+            : "Belum cukup";
+    });
     // --- STATE ---
     const state = {
         products: [],
@@ -477,11 +537,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if(radio.checked) selectedMethod = radio.value;
         }
 
+        // read nominal bayar (if user inputted) for cash payments
+        const bayarRaw = document.getElementById('bayar').value;
+        const bayarVal = (typeof bayarRaw === 'string' && bayarRaw.trim().length > 0) ? parseInt(bayarRaw) : null;
+
         const payload = {
             items: state.cart,
             metode_bayar: selectedMethod,
             promo_id: state.selectedPromo ? state.selectedPromo.id : null,
-            total_bayar: 0 // Backend calculation is safer
+            total_bayar: 0, // Backend calculation is safer
+            // only include nominal_bayar if user actually entered a value
+            ...(bayarVal !== null ? { nominal_bayar: bayarVal } : {})
         };
 
         originalText = els.btnBayar.innerHTML;

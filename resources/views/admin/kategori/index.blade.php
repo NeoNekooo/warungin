@@ -3,93 +3,161 @@
 @section('title', 'Daftar Kategori')
 
 @section('content')
-<div class="space-y-6 relative">
+<div class="space-y-8 relative"> {{-- Perluas spacing --}}
 
+    {{-- Notifikasi Toast (Tetap sama, karena sudah baik) --}}
     <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2"></div>
     
-    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+    {{-- Header Dashboard/Judul Halaman yang Lebih Dinamis --}}
+    <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         
-        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-10 -mt-10 opacity-50 pointer-events-none"></div>
-        
-        <div class="z-10">
-            <h2 class="text-2xl font-bold text-gray-800">Daftar Kategori</h2>
-            <div class="flex items-center text-sm text-gray-500 mt-1">
-                <span class="flex items-center text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">
-                    <i class="ri-folder-info-line mr-1"></i>
-                    Manajemen Data
+        <div class="space-y-1">
+            <h2 class="flex items-center text-3xl font-extrabold text-gray-900">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.0" stroke="currentColor" class="size-7 text-indigo-500 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                </svg>
+                Daftar Kategori
+            </h2>
+            <div class="flex flex-wrap items-center text-sm text-gray-500">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <i class="ri-folder-open-line mr-1.5 text-sm"></i> Manajemen Data
                 </span>
-                <span class="mx-2">•</span>
-                <span>Kelompokkan produk agar lebih rapi</span>
+                <span class="mx-3 hidden sm:inline-block">•</span>
+                <p class="text-sm mt-1 sm:mt-0 text-gray-600">Kelompokkan produk agar lebih terorganisir.</p>
             </div>
         </div>
 
-        <div class="flex gap-3 z-10">
+        <div class="w-full md:w-auto flex justify-end">
             @role('admin')
-            <button onclick="openModal('modalAdd')" class="group bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center font-medium">
-                <i class="ri-add-line mr-2 text-lg group-hover:rotate-90 transition-transform"></i> 
-                Tambah Kategori
+            <button onclick="openModal('modalAdd')" class="group bg-indigo-600 text-white px-6 py-3 rounded-xl transition-all shadow-md hover:bg-indigo-700 hover:shadow-lg flex items-center font-semibold text-base w-full md:w-auto">
+                <i class="ri-add-line mr-2 text-xl group-hover:rotate-90 transition-transform"></i> 
+                Tambah Kategori Baru
             </button>
             @endrole
         </div>
     </div>
+    
+    <div class="flex flex-col gap-6">
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-50/50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
-                        <th class="px-6 py-4 font-semibold w-16">No</th>
-                        <th class="px-6 py-4 font-semibold">Nama Kategori</th>
-                        <th class="px-6 py-4 font-semibold">Deskripsi</th>
-                        <th class="px-6 py-4 font-semibold text-center w-32">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-700 text-sm divide-y divide-gray-50">
-                    @forelse($kategoris as $kategori)
-                    <tr class="hover:bg-blue-50/30 transition duration-200">
-                        <td class="px-6 py-4 text-gray-400">{{ $loop->iteration }}</td>
-                        <td class="px-6 py-4 font-medium text-gray-800">
-                            <div class="flex items-center">
-                                <div class="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-                                    <i class="ri-price-tag-3-fill"></i>
+        {{-- Konten Utama: Daftar Kategori --}}
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            
+            {{-- Bagian Desktop (Tabel) --}}
+            <div class="hidden md:block overflow-x-auto">
+                <table class="min-w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-indigo-600 text-white/90 text-sm">
+                            <th class="px-6 py-4 font-bold w-16">No</th>
+                            <th class="px-6 py-4 font-bold">Nama Kategori</th>
+                            <th class="px-6 py-4 font-bold">Deskripsi</th>
+                            <th class="px-6 py-4 font-bold text-center w-32">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm divide-y divide-gray-100">
+                        @forelse($kategoris as $kategori)
+                        <tr class="hover:bg-blue-50/50 transition duration-200">
+                            <td class="px-6 py-4 text-gray-500 font-medium">{{ $loop->iteration }}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i class="ri-price-tag-3-fill text-lg"></i>
+                                    </div>
+                                    <span class="text-base font-semibold text-gray-800">{{ $kategori->nama_kategori }}</span>
                                 </div>
-                                <span class="text-base font-semibold">{{ $kategori->nama_kategori }}</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-gray-500">
-                            {{ $kategori->deskripsi ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <div class="flex justify-center gap-2">
-                                <button onclick="openEditModal('{{ $kategori->kategori_id }}', '{{ $kategori->nama_kategori }}', '{{ $kategori->deskripsi }}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
-                                    <i class="ri-pencil-line text-lg"></i>
-                                </button>
-                                
-                                <button onclick="confirmDelete('{{ route('kategori.destroy', $kategori->kategori_id) }}', '{{ $kategori->nama_kategori }}')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition" title="Hapus">
-                                    <i class="ri-delete-bin-line text-lg"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-400">
-                            <div class="flex flex-col items-center justify-center">
-                                <div class="bg-gray-50 p-4 rounded-full mb-3">
-                                    <i class="ri-folder-open-line text-4xl text-gray-300"></i>
+                            </td>
+                            <td class="px-6 py-4 text-gray-600">
+                                {{ $kategori->deskripsi ?? 'Tidak ada deskripsi' }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex justify-center gap-2">
+                                    <button onclick="openEditModal('{{ $kategori->kategori_id }}', '{{ $kategori->nama_kategori }}', '{{ $kategori->deskripsi }}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full transition" title="Edit">
+                                        <i class="ri-pencil-line text-lg"></i>
+                                    </button>
+                                    
+                                    <button onclick="confirmDelete('{{ route('kategori.destroy', $kategori->kategori_id) }}', '{{ $kategori->nama_kategori }}')" class="p-2 text-red-600 hover:bg-red-50 rounded-full transition" title="Hapus">
+                                        <i class="ri-delete-bin-line text-lg"></i>
+                                    </button>
                                 </div>
-                                <p class="font-medium text-gray-500">Belum ada data kategori.</p>
-                                <p class="text-xs mt-1 text-gray-400">Silakan tambah kategori baru untuk memulai.</p>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-16 text-center text-gray-400">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="bg-gray-100 p-5 rounded-full mb-4">
+                                        <i class="ri-inbox-line text-5xl text-gray-300"></i>
+                                    </div>
+                                    <p class="font-semibold text-gray-600 text-lg">Belum ada data kategori.</p>
+                                    <p class="text-sm mt-1 text-gray-500">Silakan tambah kategori baru untuk ditampilkan di sini.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Bagian Mobile (Card List) --}}
+            <div class="md:hidden p-4 space-y-4">
+                <h3 class="text-lg font-bold text-gray-700 px-2 pt-2">Daftar Kategori</h3>
+                @forelse($kategoris as $kategori)
+                <div class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3 flex-shrink-0">
+                                <i class="ri-price-tag-3-fill text-lg"></i>
                             </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium">No. {{ $loop->iteration }}</p>
+                                <p class="text-base font-semibold text-gray-800">{{ $kategori->nama_kategori }}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-1 flex-shrink-0">
+                             <button onclick="openEditModal('{{ $kategori->kategori_id }}', '{{ $kategori->nama_kategori }}', '{{ $kategori->deskripsi }}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full transition" title="Edit">
+                                <i class="ri-pencil-line text-lg"></i>
+                            </button>
+                            
+                            <button onclick="confirmDelete('{{ route('kategori.destroy', $kategori->kategori_id) }}', '{{ $kategori->nama_kategori }}')" class="p-2 text-red-600 hover:bg-red-50 rounded-full transition" title="Hapus">
+                                <i class="ri-delete-bin-line text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="border-t border-dashed pt-2">
+                        <p class="text-xs font-medium text-gray-500 mb-1">Deskripsi:</p>
+                        <p class="text-sm text-gray-600">{{ $kategori->deskripsi ?? 'Tidak ada deskripsi' }}</p>
+                    </div>
+                </div>
+                @empty
+                <div class="py-10 text-center text-gray-400">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="bg-gray-100 p-5 rounded-full mb-4">
+                            <i class="ri-inbox-line text-5xl text-gray-300"></i>
+                        </div>
+                        <p class="font-semibold text-gray-600 text-lg">Belum ada data kategori.</p>
+                        <p class="text-sm mt-1 text-gray-500">Silakan tambah kategori baru untuk ditampilkan di sini.</p>
+                    </div>
+                </div>
+                @endforelse
+            </div>
+
+            {{-- Pagination --}}
+            @if($kategoris->hasPages())
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-center md:justify-end">
+                {{ $kategoris->links('vendor.pagination.tailwind') }} {{-- Pastikan Anda punya template pagination tailwind --}}
+            </div>
+            @endif
+
         </div>
+
     </div>
 
 </div> 
+
+{{-- Modals (Modal Tambah, Edit, Hapus - Tetap sama, karena sudah cukup modern dengan animasi) --}}
+{{-- Saya akan sertakan kembali modal-modal Anda untuk memastikan kode tetap utuh --}}
+
+{{-- Modal Tambah --}}
 <div id="modalAdd" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="backdropAdd" onclick="closeModal('modalAdd')"></div>
     
@@ -97,11 +165,11 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div id="panelAdd" class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 scale-95 border border-gray-100">
                 
-                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-white flex items-center">
-                        <i class="ri-add-circle-fill mr-2 text-xl text-blue-200"></i> Tambah Kategori
+                        <i class="ri-add-circle-fill mr-2 text-xl text-indigo-200"></i> Tambah Kategori
                     </h3>
-                    <button onclick="closeModal('modalAdd')" class="text-blue-200 hover:text-white hover:bg-blue-600/50 rounded-full p-1 transition focus:outline-none">
+                    <button onclick="closeModal('modalAdd')" class="text-indigo-200 hover:text-white hover:bg-indigo-600/50 rounded-full p-1 transition focus:outline-none">
                         <i class="ri-close-line text-2xl"></i>
                     </button>
                 </div>
@@ -111,16 +179,16 @@
                     <div class="bg-white px-6 py-6 space-y-5">
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Nama Kategori</label>
-                            <input type="text" name="nama_kategori" id="add_nama" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" required placeholder="Contoh: Minuman">
+                            <input type="text" name="nama_kategori" id="add_nama" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" required placeholder="Contoh: Minuman">
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi</label>
-                            <textarea name="deskripsi" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" rows="3" placeholder="Deskripsi singkat kategori..."></textarea>
+                            <textarea name="deskripsi" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" rows="3" placeholder="Deskripsi singkat kategori..."></textarea>
                         </div>
                     </div>
                     
                     <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 border-t border-gray-100">
-                        <button type="submit" class="w-full sm:w-auto bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 font-medium shadow-sm flex items-center justify-center">
+                        <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-5 py-2.5 rounded-xl hover:bg-indigo-700 font-medium shadow-sm flex items-center justify-center">
                             <i class="ri-save-line mr-2"></i> Simpan
                         </button>
                         <button type="button" onclick="closeModal('modalAdd')" class="w-full sm:w-auto bg-white text-gray-700 px-5 py-2.5 rounded-xl border border-gray-300 hover:bg-gray-50 font-medium">Batal</button>
@@ -129,11 +197,9 @@
             </div>
         </div>
     </div>
-    <div class="px-6 py-4 bg-white border-t border-gray-100">
-        {{ $kategoris->links() }}
-    </div>
 </div>
 
+{{-- Modal Edit --}}
 <div id="modalEdit" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="backdropEdit" onclick="closeModal('modalEdit')"></div>
     
@@ -141,11 +207,11 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div id="panelEdit" class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg opacity-0 scale-95 border border-gray-100">
                 
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex justify-between items-center">
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-white flex items-center">
-                        <i class="ri-edit-2-fill mr-2 text-xl text-blue-200"></i> Edit Kategori
+                        <i class="ri-edit-2-fill mr-2 text-xl text-indigo-200"></i> Edit Kategori
                     </h3>
-                    <button onclick="closeModal('modalEdit')" class="text-blue-200 hover:text-white hover:bg-blue-600/50 rounded-full p-1 transition focus:outline-none">
+                    <button onclick="closeModal('modalEdit')" class="text-indigo-200 hover:text-white hover:bg-indigo-600/50 rounded-full p-1 transition focus:outline-none">
                         <i class="ri-close-line text-2xl"></i>
                     </button>
                 </div>
@@ -157,11 +223,11 @@
                     <div class="bg-white px-6 py-6 space-y-5">
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Nama Kategori</label>
-                            <input type="text" name="nama_kategori" id="edit_nama" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" required>
+                            <input type="text" name="nama_kategori" id="edit_nama" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" required>
                         </div>
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi</label>
-                            <textarea name="deskripsi" id="edit_deskripsi" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" rows="3"></textarea>
+                            <textarea name="deskripsi" id="edit_deskripsi" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 border-t border-gray-100">
@@ -176,6 +242,7 @@
     </div>
 </div>
 
+{{-- Modal Hapus --}}
 <div id="modalDelete" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="backdropDelete" onclick="closeModal('modalDelete')"></div>
     
@@ -183,13 +250,13 @@
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
             <div id="panelDelete" class="relative transform overflow-hidden rounded-2xl bg-white text-center shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md opacity-0 scale-95 p-6 border border-gray-100">
                 
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mb-4 animate-bounce">
+                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 mb-4 animate-pulse">
                     <i class="ri-alarm-warning-fill text-3xl text-red-600"></i>
                 </div>
                 
                 <h3 class="text-xl font-bold text-gray-900 mb-2">Hapus Kategori?</h3>
                 <p class="text-sm text-gray-500 mb-6">
-                    Anda akan menghapus kategori <span id="deleteTargetName" class="font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded"></span>. 
+                    Anda akan menghapus kategori <span id="deleteTargetName" class="font-bold text-gray-800 bg-red-50 px-2 py-0.5 rounded-lg border border-red-200"></span>. 
                     <br>Tindakan ini tidak dapat dibatalkan.
                 </p>
 
@@ -204,6 +271,7 @@
     </div>
 </div>
 
+{{-- Skrip JavaScript (Tetap sama, karena sudah baik) --}}
 <script>
     // --- ANIMASI MODAL UMUM ---
     function openModal(id) {
@@ -222,6 +290,7 @@
 
         // Auto focus jika modal tambah
         if(id === 'modalAdd') setTimeout(() => document.getElementById('add_nama').focus(), 200);
+        if(id === 'modalEdit') setTimeout(() => document.getElementById('edit_nama').focus(), 200);
     }
 
     function closeModal(id) {
@@ -242,10 +311,11 @@
     // --- LOGIC EDIT KATEGORI ---
     function openEditModal(id, nama, deskripsi) {
         document.getElementById('edit_nama').value = nama;
-        document.getElementById('edit_deskripsi').value = deskripsi;
+        document.getElementById('edit_deskripsi').value = deskripsi === 'null' ? '' : deskripsi; // Menangani null dari Blade
         
         const form = document.getElementById('formEdit');
-        form.action = "{{ url('kategori') }}/" + id; // Sesuaikan jika perlu
+        // Pastikan route update Anda menggunakan ID
+        form.action = "{{ url('kategori') }}/" + id; 
         
         openModal('modalEdit');
     }
@@ -265,8 +335,9 @@
         let bgClass = type === 'success' ? 'bg-green-600' : 'bg-red-600';
         let icon = type === 'success' ? 'ri-check-double-line' : 'ri-error-warning-line';
         
+        // Menambahkan animasi bounce pada ikon
         toast.className = `${bgClass} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 transform transition-all duration-300 translate-x-10 opacity-0`;
-        toast.innerHTML = `<i class="${icon} text-xl"></i><span class="font-medium">${message}</span>`;
+        toast.innerHTML = `<i class="${icon} text-xl animate-pulse"></i><span class="font-medium">${message}</span>`;
         
         container.appendChild(toast);
         requestAnimationFrame(() => toast.classList.remove('translate-x-10', 'opacity-0'));
@@ -274,7 +345,7 @@
         setTimeout(() => {
             toast.classList.add('opacity-0', 'translate-y-4');
             setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        }, 4000); // Durasi tampil lebih lama
     }
 
     @if(session('success')) showToast("{{ session('success') }}"); @endif

@@ -65,4 +65,8 @@ class Transaksi extends Model
     {
         return $this->belongsTo(User::class, 'kasir_id', 'user_id');
     }
+
+    public function produk(){
+        return $this->belongsTo(Produk::class, 'produk_id');
+    }
 }

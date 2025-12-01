@@ -78,6 +78,7 @@ class PosController extends Controller
             'items.*.jumlah' => 'required|integer|min:1',
             'metode_bayar' => 'required|in:tunai,qris,transfer',
             'pelanggan_id' => 'nullable|integer',
+            'nominal_bayar' => 'nullable|numeric|min:0',
         ]);
 
         $userId = Auth::id();
@@ -103,6 +104,17 @@ class PosController extends Controller
 
         $totalAfter = max(0, $total - $discountAmount);
 
+        // determine nominal bayar and kembalian for cash payments if provided
+        $nominalBayar = isset($data['nominal_bayar']) ? (float)$data['nominal_bayar'] : null;
+        if ($data['metode_bayar'] === 'tunai' && $nominalBayar === null) {
+            // fallback: assume exact payment if caller didn't send nominal_bayar
+            $nominalBayar = $totalAfter;
+        }
+        $kembalian = 0;
+        if ($data['metode_bayar'] === 'tunai') {
+            $kembalian = max(0, (float)$nominalBayar - $totalAfter);
+        }
+
         $transaksi = Transaksi::create([
             'tanggal' => now(),
             'kasir_id' => $userId,
@@ -111,8 +123,9 @@ class PosController extends Controller
             'diskon' => $discountAmount,
             'pajak' => 0,
             'metode_bayar' => $data['metode_bayar'],
-            'nominal_bayar' => ($data['metode_bayar'] === 'tunai') ? $totalAfter : 0,
-            'kembalian' => ($data['metode_bayar'] === 'tunai') ? 0 : 0,
+            // store the nominal_bayar supplied by UI (for tunai) or 0 otherwise
+            'nominal_bayar' => ($data['metode_bayar'] === 'tunai') ? ($nominalBayar ?? $totalAfter) : 0,
+            'kembalian' => ($data['metode_bayar'] === 'tunai') ? $kembalian : 0,
             'status' => ($data['metode_bayar'] === 'tunai') ? 'selesai' : 'pending',
         ]);
 
@@ -178,7 +191,12 @@ class PosController extends Controller
 
         // If cash, we already marked selesai: generate invoice file
         if ($transaksi->status === 'selesai') {
-            $items = DB::table('transaksi_detail')->where('transaksi_id', $transaksi->transaksi_id)->get();
+            // include product names for invoice
+            $items = DB::table('transaksi_detail as td')
+                ->leftJoin('produk as p', 'td.produk_id', '=', 'p.produk_id')
+                ->where('td.transaksi_id', $transaksi->transaksi_id)
+                ->select('td.*', 'p.nama_produk')
+                ->get();
             $html = view('admin.transaksi.invoice', compact('transaksi', 'items'))->render();
             Storage::disk('local')->put("invoices/invoice-{$transaksi->transaksi_id}.html", $html);
 

@@ -30,15 +30,16 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if($user->role === 'admin') {
+        if (in_array($user->role, ['admin', 'owner'])) {
+            // admin and owner users share the same admin dashboard
             return redirect()->intended(route('admin.dashboard', absolute: false));
-        }elseif($user->role === 'kasir') {
+        } elseif ($user->role === 'kasir') {
             return redirect()->intended(route('kasir.dashboard', absolute: false));
         }
 
         Auth::logout();
         $request->session()->invalidate();
-        $request->session()->regenerateToke();
+        $request->session()->regenerateToken();
 
         return redirect('/login')->withErrors([
             'email' => 'Peran anda tidak diizinkan.'

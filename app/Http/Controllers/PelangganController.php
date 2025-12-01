@@ -39,7 +39,7 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::create($validated);
 
         return redirect()->route('pelanggan.index')->with('success', 'Data Pelanggan berhasil dibuat');
-    }
+    }   
 
     public function edit($id)
     {
@@ -53,7 +53,7 @@ class PelangganController extends Controller
         $pelanggan = Pelanggan::findOrFail($id);
 
         $validated = $request->validate([
-            'nama_pelanggan' => 'required|string|unique:pelanggans,nama_pelanggan',
+            'nama_pelanggan' => 'required|string|unique:pelanggans,id',
             'no_hp' => 'required|string',
             'alamat' => 'nullable|string',
             'email' => 'required|email|max:100',

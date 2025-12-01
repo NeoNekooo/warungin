@@ -117,7 +117,12 @@ class MidtransController extends Controller
                         }
                         // If transaction is now completed, generate invoice HTML for record
                         if ($newStatus === 'selesai') {
-                            $items = DB::table('transaksi_detail')->where('transaksi_id', $transaksi->transaksi_id)->get();
+                            // include product name for invoice rendering
+                            $items = DB::table('transaksi_detail as td')
+                                ->leftJoin('produk as p', 'td.produk_id', '=', 'p.produk_id')
+                                ->where('td.transaksi_id', $transaksi->transaksi_id)
+                                ->select('td.*', 'p.nama_produk')
+                                ->get();
                             $html = view('admin.transaksi.invoice', compact('transaksi', 'items'))->render();
                             Storage::disk('local')->put("invoices/invoice-{$transaksi->transaksi_id}.html", $html);
                         }

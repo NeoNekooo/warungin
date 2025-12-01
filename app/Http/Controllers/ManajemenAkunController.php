@@ -19,7 +19,7 @@ class ManajemenAkunController extends Controller
 
     public function index()
     {
-        $users = User::orderBy('name')->paginate(20);
+        $users = User::orderBy('nama')->paginate(20);
         return view('admin.manajemen_akun.index', compact('users'));
     }
 
