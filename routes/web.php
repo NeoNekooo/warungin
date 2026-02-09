@@ -29,7 +29,6 @@ Route::middleware('auth')->group(function () {
 
     // Admin & Owner Group
     Route::middleware('role:admin|owner')->group(function () {
-        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
         // Reports accessible to Admin and Owner
         Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/pdf', [App\Http\Controllers\ReportController::class, 'exportPdf'])->name('reports.pdf');
@@ -59,6 +58,7 @@ Route::middleware('auth')->group(function () {
 
     // Admin Specific Routes
     Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
         Route::post('/pembayaran/{pembayaran}/reconcile', [PembayaranController::class, 'reconcile'])->name('pembayaran.reconcile');
         Route::resource('manajemen_akun', ManajemenAkunController::class);
         // Generate a new unique barcode string for product creation (AJAX) // Moved to Admin & Owner | Kasir Group
