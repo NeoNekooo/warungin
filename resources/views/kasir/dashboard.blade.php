@@ -14,7 +14,7 @@
                     <h2 class="text-3xl font-bold tracking-tight">Selamat Datang, {{ auth()->user()->nama ?? auth()->user()->username }} 👋</h2>
                     <p class="mt-2 text-green-100 text-lg">Gunakan kasir untuk memproses transaksi dengan cepat.</p>
                     <div class="mt-6 inline-flex items-center bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20 text-sm font-medium">
-                        <span>{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}</span>
+                        <span>{{ \Carbon\Carbon::parse($today)->isoFormat('dddd, D MMMM Y') }}</span>
                     </div>
                 </div>
 
@@ -27,31 +27,31 @@
 
         <!-- Summary cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @php
-                $today = \Carbon\Carbon::now()->toDateString();
-                $transToday = \App\Models\Transaksi::whereDate('tanggal', $today)->count();
-                $totalToday = \App\Models\Transaksi::whereDate('tanggal', $today)->sum('total');
-                $produkCount = \App\Models\Produk::count();
-                $pendingPayments = \App\Models\Pembayaran::where('jumlah', 0)->count();
-            @endphp
-
             <div class="bg-white p-4 rounded-xl shadow-sm">
-                <p class="text-sm text-gray-500">Transaksi Hari Ini</p>
+                <div class="flex items-center text-sm text-gray-500">
+                    <i class="ri-shopping-cart-line mr-2 text-xl text-blue-500"></i> Transaksi Hari Ini
+                </div>
                 <p class="text-2xl font-bold text-gray-800">{{ $transToday }}</p>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow-sm">
-                <p class="text-sm text-gray-500">Total Penjualan</p>
+                <div class="flex items-center text-sm text-gray-500">
+                    <i class="ri-bank-card-line mr-2 text-xl text-green-500"></i> Total Penjualan
+                </div>
                 <p class="text-2xl font-bold text-gray-800">Rp {{ number_format($totalToday,0,',','.') }}</p>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow-sm">
-                <p class="text-sm text-gray-500">Produk Terdaftar</p>
+                <div class="flex items-center text-sm text-gray-500">
+                    <i class="ri-box-3-line mr-2 text-xl text-yellow-500"></i> Produk Terdaftar
+                </div>
                 <p class="text-2xl font-bold text-gray-800">{{ $produkCount }}</p>
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow-sm">
-                <p class="text-sm text-gray-500">Pembayaran Pending</p>
+                <div class="flex items-center text-sm text-gray-500">
+                    <i class="ri-time-line mr-2 text-xl text-red-500"></i> Pembayaran Pending
+                </div>
                 <p class="text-2xl font-bold text-gray-800">{{ $pendingPayments }}</p>
             </div>
         </div>
@@ -69,7 +69,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(\App\Models\Transaksi::latest()->limit(6)->get() as $t)
+                        @foreach($recentActivity as $t)
                         <tr class="border-t">
                             <td class="px-4 py-2">{{ optional($t->tanggal)->format('Y-m-d H:i') }}</td>
                             <td class="px-4 py-2">Transaksi #{{ $t->transaksi_id }}</td>

@@ -13,7 +13,7 @@ class PembayaranController extends Controller
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
             if (!$user) return abort(403);
-            $allowed = ['admin', 'kasir'];
+            $allowed = ['admin', 'owner', 'kasir'];
             if (!in_array($user->role, $allowed)) return abort(403);
             return $next($request);
         })->only(['index','show']);

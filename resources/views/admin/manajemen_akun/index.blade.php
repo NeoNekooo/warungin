@@ -177,8 +177,8 @@
                 <select id="role_add" name="role" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                     <option value="">Pilih Role</option>
                     <option value="admin">Admin</option>
+                    <option value="owner">Owner</option>
                     <option value="kasir">Kasir</option>
-                    {{-- Tambahkan role lain jika ada --}}
                 </select>
             </div>
              <div>
@@ -234,6 +234,7 @@
                 <label for="role_edit" class="block text-sm font-medium text-gray-700">Role <span class="text-red-500">*</span></label>
                 <select id="role_edit" name="role" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                     <option value="admin">Admin</option>
+                    <option value="owner">Owner</option>
                     <option value="kasir">Kasir</option>
                 </select>
             </div>

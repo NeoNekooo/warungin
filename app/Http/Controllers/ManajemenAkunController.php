@@ -27,4 +27,27 @@ class ManajemenAkunController extends Controller
     {
         return view('admin.manajemen_akun.create');
     }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'username' => 'required|string|max:255|unique:users',
+            'nama' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'role' => 'required|in:admin,owner,kasir',
+            'no_hp' => 'nullable|string|max:255',
+            'password' => 'required|string|min:8',
+        ]);
+
+        User::create([
+            'username' => $validatedData['username'],
+            'nama' => $validatedData['nama'],
+            'email' => $validatedData['email'],
+            'role' => $validatedData['role'],
+            'no_hp' => $validatedData['no_hp'],
+            'password' => \Illuminate\Support\Facades\Hash::make($validatedData['password']),
+        ]);
+
+        return redirect()->route('manajemen_akun.index')->with('success', 'Akun berhasil ditambahkan.');
+    }
 }

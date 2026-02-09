@@ -83,7 +83,7 @@
 
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
 
-            {{-- Dashboard Admin --}}
+            {{-- Dashboard --}}
             @if (Auth::user()->role === 'admin')
                 <a href="{{ route('admin.dashboard') }}"
                     class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('admin.dashboard') }}"
@@ -94,12 +94,21 @@
                     </svg>
                     <span class="ml-3">Dashboard Admin</span>
                 </a>
-            {{-- Dashboard Kasir / Non-Admin --}}
-            @else
+            @elseif (Auth::user()->role === 'owner')
+                <a href="{{ route('owner.dashboard') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('owner.dashboard') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                        <path d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
+                        <path d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
+                    </svg>
+                    <span class="ml-3">Dashboard Owner</span>
+                </a>
+            @elseif (Auth::user()->role === 'kasir')
                 <a href="{{ route('kasir.dashboard') }}"
                     class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01]
-                    {{ request()->routeIs('kasir.dashboard') 
-                        ? 'bg-green-100 text-green-700 font-bold shadow-sm ring-2 ring-green-200' 
+                    {{ request()->routeIs('kasir.dashboard')
+                        ? 'bg-green-100 text-green-700 font-bold shadow-sm ring-2 ring-green-200'
                         : 'text-gray-600 hover:bg-gray-100 hover:text-green-800' }}"
                     @click="!isDesktop && toggle()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -147,16 +156,6 @@
                 <span class="ml-3">Pelanggan</span>
             </a>
 
-            {{-- Promo --}}
-            <a href="{{ route('promos.index') }}"
-                class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('promos.index') }}"
-                @click="!isDesktop && toggle()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
-                </svg>
-                <span class="ml-3">Promo</span>
-            </a>
-
             {{-- Stok Log --}}
             <a href="{{ route('stok_log.index') }}"
                 class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('stok_log.index') }}"
@@ -168,19 +167,18 @@
             </a>
 
 
-            {{-- Divider: Menu Transaksi (Admin View) --}}
+            {{-- Divider: Menu Transaksi --}}
             <div class="text-xs uppercase font-extrabold text-indigo-400 opacity-80 mt-6 mb-1 tracking-wider pt-2 border-t border-gray-100">
                 Menu Transaksi
             </div>
 
-            {{-- Transaksi (POS) --}}
-            <a href="{{ route('pos.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pos.index') }}"
+            {{-- Transaksi --}}
+            <a href="{{ route('transaksi.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('transaksi.index') }}"
                 @click="!isDesktop && toggle()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
-                <path fill-rule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M3 3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3zm2 5h14v10H5V8zm2-3h10v1H7V5zm0 12h10v1H7v-1z" clip-rule="evenodd" />
                 </svg>
-                <span class="ml-3">Transaksi (POS)</span>
+                <span class="ml-3">Transaksi</span>
             </a>
 
             {{-- Pembayaran --}}
@@ -218,10 +216,89 @@
             </a>
             @endif
 
+            {{-- Owner Menu --}}
+            @if (Auth::user()->role === 'owner')
+                <div class="text-xs uppercase font-extrabold text-indigo-400 opacity-80 mt-6 mb-1 tracking-wider pt-2 border-t border-gray-100">
+                    Data Master (Owner)
+                </div>
+                {{-- Produk --}}
+                <a href="{{ route('produk.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('produk.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                    </svg>
+                    <span class="ml-3">Produk</span>
+                </a>
+                {{-- Kategori --}}
+                <a href="{{ route('kategori.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('kategori.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                    <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="ml-3">Kategori</span>
+                </a>
+                {{-- Pelanggan --}}
+                <a href="{{ route('pelanggan.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pelanggan.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
+                    <span class="ml-3">Pelanggan</span>
+                </a>
+                {{-- Stok Log --}}
+                <a href="{{ route('stok_log.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('stok_log.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                    </svg>
+                    <span class="ml-3">Stok Log</span>
+                </a>
+                <div class="text-xs uppercase font-extrabold text-indigo-400 opacity-80 mt-6 mb-1 tracking-wider pt-2 border-t border-gray-100">
+                    Menu Transaksi (Owner)
+                </div>
+                {{-- Transaksi --}}
+                <a href="{{ route('transaksi.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('transaksi.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3zm2 5h14v10H5V8zm2-3h10v1H7V5zm0 12h10v1H7v-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="ml-3">Transaksi</span>
+                </a>
+                {{-- Pembayaran --}}
+                <a href="{{ route('pembayaran.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pembayaran.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+                    </svg>
+                    <span class="ml-3">Pembayaran</span>
+                </a>
+                {{-- Promo --}}
+                <a href="{{ route('promos.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('promos.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                    <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="ml-3">Promo</span>
+                </a>
+                
+                {{-- Laporan & Analitik --}}
+                <a href="{{ route('reports.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('reports.index') }}"
+                   @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25m0-1.5H5.25M6 4.5h.75A2.25 2.25 0 0 1 9 6.75V16.5M6 4.5V3m0 3.75v3m0 3.75v3m0-11.25H9.75M12 4.5h.75A2.25 2.25 0 0 1 15 6.75V16.5M12 4.5v3m0 3.75v3m0 3.75v3m0-11.25H15.75" />
+                    </svg>
+                    <span class="ml-3">Laporan & Analitik</span>
+                </a>
+            @endif
 
-            {{-- ================= KASIR / OWNER Menu ================= --}}
-            @hasanyrole(['kasir','owner'])
-                {{-- Divider: Operasional Kasir --}}
+            {{-- Kasir Menu --}}
+            @if (Auth::user()->role === 'kasir')
                 <div class="text-xs uppercase font-extrabold text-indigo-400 opacity-80 mt-6 mb-1 tracking-wider pt-2 border-t border-gray-100">
                     Operasional Kasir
                 </div>
@@ -229,19 +306,31 @@
                 {{-- Transaksi (POS) --}}
                 <a href="{{ route('pos.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pos.index') }}"
                     @click="!isDesktop && toggle()">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-2.25 4.5H19.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H4.5A2.25 2.25 0 0 0 2.25 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                    <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
+                    <path fill-rule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
                     </svg>
                     <span class="ml-3">Transaksi (POS)</span>
                 </a>
 
-                {{-- Produk (View Only for Kasir) --}}
-                <a href="{{ route('produk.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('produk.index') }}"
+                {{-- Produk --}}
+                <a href="{{ route('produk.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('produk.index') }}"
                     @click="!isDesktop && toggle()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
                     </svg>
                     <span class="ml-3">Produk</span>
+                </a>
+
+                {{-- Pelanggan --}}
+                <a href="{{ route('pelanggan.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pelanggan.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
+                    <span class="ml-3">Pelanggan</span>
                 </a>
 
                 {{-- Transaksi Detail --}}
@@ -252,16 +341,24 @@
                     </svg>
                     <span class="ml-3">Transaksi Detail</span>
                 </a>
-
-                {{-- Pelanggan --}}
-                <a href="{{ route('pelanggan.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pelanggan.index') }}"
+                {{-- Pembayaran --}}
+                <a href="{{ route('pembayaran.index') }}" class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('pembayaran.index') }}"
                     @click="!isDesktop && toggle()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
                     </svg>
-                    <span class="ml-3">Pelanggan</span>
+                    <span class="ml-3">Pembayaran</span>
                 </a>
-            @endhasanyrole
+                {{-- Stok Log --}}
+                <a href="{{ route('stok_log.index') }}"
+                    class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('stok_log.index') }}"
+                    @click="!isDesktop && toggle()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                    </svg>
+                    <span class="ml-3">Stok Log</span>
+                </a>
+            @endif
 
 
         </nav>
@@ -269,8 +366,8 @@
         {{-- Bottom Section (Laporan dan Logout) --}}
         <div class="p-4 border-t border-gray-200 bg-gray-50">
 
-            {{-- Laporan: Admin / Kasir / Owner --}}
-            @hasanyrole(['admin','kasir','owner'])
+            {{-- Laporan: Admin --}}
+            @if (Auth::user()->role === 'admin')
             <a href="{{ route('reports.index') }}" 
                class="flex items-center px-4 py-2.5 mb-3 rounded-lg text-indigo-700 font-semibold bg-indigo-100 hover:bg-indigo-200 transition duration-150 ease-in-out"
                @click="!isDesktop && toggle()">
@@ -279,7 +376,7 @@
                 </svg>
                 <span class="ml-3">Laporan & Analitik</span>
             </a>
-            @endhasanyrole
+            @endif
 
             {{-- Logout --}}
             <form method="POST" action="{{ route('logout') }}">

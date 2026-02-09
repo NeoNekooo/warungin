@@ -13,35 +13,35 @@
 
                 <div class="bg-white shadow-lg rounded-xl p-6">
 
-    <form action="{{ route('kategori.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form action="{{ route('manajemen_akun.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @csrf
 
-        <!-- Nama Kategori -->
+        <!-- Username -->
         <div class="flex flex-col">
-            <label for="nama_kategori" class="text-gray-700 font-medium mb-1">Username</label>
+            <label for="username" class="text-gray-700 font-medium mb-1">Username</label>
             <input 
                 type="text" 
-                name="nama_kategori" 
-                id="nama_kategori"
+                name="username" 
+                id="username"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Masukkan nama username"
             >
-            @error('nama_kategori')
+            @error('username')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Deskripsi -->
+        <!-- Nama -->
         <div class="flex flex-col">
-            <label for="deskripsi" class="text-gray-700 font-medium mb-1">Nama</label>
+            <label for="nama" class="text-gray-700 font-medium mb-1">Nama</label>
             <input 
                 type="text" 
-                name="deskripsi" 
-                id="deskripsi"
+                name="nama" 
+                id="nama"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Masukkan Nama"
             >
-            @error('deskripsi')
+            @error('nama')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -56,20 +56,22 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Masukkan email"
             >
-            @error('deskripsi')
+            @error('email')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Email  -->
         <div class="flex flex-col">
-            <label for="email" class="text-gray-700 font-medium mb-1">Role</label>
-            <select name="" id=""
+            <label for="role" class="text-gray-700 font-medium mb-1">Role</label>
+            <select name="role" id="role"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
                 <option value="">-- Pilih Role --</option>
+                <option value="admin">Admin</option>
+                <option value="owner">Owner</option>
+                <option value="kasir">Kasir</option>
             </select>
-            @error('deskripsi')
+            @error('role')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -84,7 +86,7 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Masukkan no.hp"
             >
-            @error('deskripsi')
+            @error('no_hp')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -99,7 +101,7 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Masukkan Password"
             >
-            @error('deskripsi')
+            @error('password')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>

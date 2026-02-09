@@ -3,225 +3,237 @@
 @section('title', 'Dashboard Admin')
 
 @section('content')
-<div class="flex-1 p-6 bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto space-y-8">
+    <div class="flex-1 p-6 bg-gray-50 min-h-screen">
+        <div class="max-w-7xl mx-auto space-y-8">
 
-        {{-- 1. Kartu Sambutan (Modern Gradient) --}}
-        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-blue-700 rounded-2xl shadow-xl p-8 text-white">
-            
-            {{-- Hiasan Background --}}
-            <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
-            <div class="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400 opacity-20 rounded-full -ml-16 -mb-16 blur-2xl pointer-events-none"></div>
-
-            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 class="text-3xl font-extrabold tracking-tight">Selamat Datang, {{ auth()->user()->name ?? 'Admin' }}! 👋</h2>
-                    <p class="mt-2 text-indigo-100 text-lg">Ringkasan aktivitas dan status kunci Warungin hari ini.</p>
-                    
-                    {{-- Tanggal Hari Ini --}}
-                    <div class="mt-6 inline-flex items-center bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/20 text-sm font-medium">
-                        <i class="ri-calendar-event-line mr-2 text-lg"></i>
-                        <span>{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}</span>
+            {{-- 1. Kartu Sambutan --}}
+            <div
+                class="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-blue-700 rounded-2xl shadow-xl p-8 text-white">
+                <div
+                    class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none">
+                </div>
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-3xl font-extrabold tracking-tight">Selamat Datang,
+                            {{ auth()->user()->name ?? 'Admin' }}! 👋</h2>
+                        <p class="mt-2 text-indigo-100 text-lg">Ringkasan aktivitas Warungin hari ini.</p>
+                        <div
+                            class="mt-6 inline-flex items-center bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/20 text-sm font-medium">
+                            <i class="ri-calendar-event-line mr-2 text-lg"></i>
+                            <span>{{ $currentDate->isoFormat('dddd, D MMMM Y') }}</span>
+                        </div>
+                    </div>
+                    <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-md hidden md:block border border-white/10">
+                        <i class="ri-store-2-fill text-6xl text-white/90 drop-shadow-md"></i>
                     </div>
                 </div>
-                
-                {{-- Logo Dekoratif --}}
-                <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-md shadow-inner hidden md:block border border-white/10">
-                    {{-- Ganti dengan icon yang lebih relevan jika logo tidak tersedia --}}
-                    <i class="ri-store-2-fill text-6xl text-white/90 drop-shadow-md"></i>
-                </div>
             </div>
-        </div>
-        
-        {{-- 2. Grid Ringkasan (Key Metrics - 4 Kolom) --}}
-        <h2 class="text-xl font-bold text-gray-800 border-b pb-2">Ringkasan Keuangan Harian</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @php
-                $summaries = [
-                    [
-                        'title' => 'Total Penjualan', 
-                        'icon' => 'ri-shopping-bag-3-fill', 
-                        'value' => 'Rp 1.250.000', // Data real: $penjualan_hari_ini
-                        'color' => 'text-indigo-600',
-                        'bg' => 'bg-indigo-50',
-                        'trend' => '+12% dari kemarin',
-                        'trend_color' => 'text-green-500' // Tambahkan warna tren
-                    ],
-                    [
-                        'title' => 'Total Pengeluaran', 
-                        'icon' => 'ri-wallet-3-fill', 
-                        'value' => 'Rp 500.000', // Data real: $pengeluaran_hari_ini
-                        'color' => 'text-red-600',
-                        'bg' => 'bg-red-50',
-                        'trend' => 'Stabil',
-                        'trend_color' => 'text-gray-500'
-                    ],
-                    [
-                        'title' => 'Total Transaksi', 
-                        'icon' => 'ri-file-list-3-fill', 
-                        'value' => '15', // Data real: $total_transaksi_hari_ini
-                        'color' => 'text-purple-600',
-                        'bg' => 'bg-purple-50',
-                        'trend' => '5 Pembatalan',
-                        'trend_color' => 'text-orange-500'
-                    ],
-                    [
-                        'title' => 'Keuntungan Bersih', 
-                        'icon' => 'ri-line-chart-fill', 
-                        'value' => 'Rp 750.000', // Data real: $keuntungan_bersih
-                        'color' => 'text-green-600',
-                        'bg' => 'bg-green-50',
-                        'trend' => 'Target tercapai',
-                        'trend_color' => 'text-green-500'
-                    ],
-                ];
-            @endphp
 
-            @foreach ($summaries as $item)
-                @php
-                    // Logika sederhana untuk icon trend
-                    $trendIcon = '';
-                    if (str_contains($item['trend'], '+')) {
-                        $trendIcon = 'ri-arrow-up-line';
-                    } elseif (str_contains($item['trend'], 'Stabil')) {
-                        $trendIcon = 'ri-line-line';
-                    } elseif (str_contains($item['trend'], 'Pembatalan')) {
-                        $trendIcon = 'ri-error-warning-line';
-                    } else {
-                         $trendIcon = 'ri-check-line';
-                    }
-                @endphp
-                <div class="group bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                    <div class="flex items-start justify-between mb-4">
+            {{-- 2. Grid Key Metrics --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {{-- Total Pendapatan --}}
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">{{ $item['title'] }}</p>
-                            <h3 class="text-3xl font-extrabold text-gray-900 mt-1 tracking-tight">{{ $item['value'] }}</h3>
+                            <p class="text-sm font-medium text-gray-500">Total Pendapatan</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">Rp
+                                {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
                         </div>
-                        {{-- Icon Container --}}
-                        <div class="{{ $item['bg'] }} {{ $item['color'] }} p-3 rounded-xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-14 h-14 shadow-lg ring-1 ring-gray-100">
-                            <i class="{{ $item['icon'] }} text-2xl"></i>
+                        <div class="bg-indigo-50 text-indigo-600 p-3 rounded-xl"><i
+                                class="ri-money-dollar-circle-line text-2xl"></i></div>
+                    </div>
+                </div>
+                {{-- Total Transaksi --}}
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Total Transaksi</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">
+                                {{ number_format($totalTransactions, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="bg-blue-50 text-blue-600 p-3 rounded-xl"><i class="ri-bill-line text-2xl"></i></div>
+                    </div>
+                </div>
+                {{-- Total Pengguna --}}
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Total Pengguna</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ number_format($totalUsers, 0, ',', '.') }}
+                            </h3>
+                        </div>
+                        <div class="bg-green-50 text-green-600 p-3 rounded-xl"><i class="ri-group-line text-2xl"></i></div>
+                    </div>
+                </div>
+                {{-- Total Produk --}}
+                <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Total Produk</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mt-1">
+                                {{ number_format($totalProducts, 0, ',', '.') }}</h3>
+                        </div>
+                        <div class="bg-yellow-50 text-yellow-600 p-3 rounded-xl"><i class="ri-box-3-line text-2xl"></i>
                         </div>
                     </div>
-                    
-                    {{-- Footer Kecil di Card --}}
-                    <div class="flex items-center text-xs pt-3 mt-2 {{ $item['trend_color'] }} border-t border-gray-100">
-                        <i class="{{ $trendIcon }} mr-1.5 text-sm"></i>
-                        <span class="font-semibold">{{ $item['trend'] }}</span>
+                </div>
+            </div>
+
+            {{-- 3. Area Grafik & Produk Terlaris --}}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {{-- Diagram Penjualan --}}
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <div class="flex justify-between items-center mb-6 border-b pb-3">
+                        <h3 class="font-extrabold text-gray-800 text-lg flex items-center">
+                            <i class="ri-line-chart-fill mr-2 text-indigo-500"></i> Tren Penjualan 7 Hari Terakhir
+                        </h3>
+                    </div>
+
+                    <div class="relative h-72 w-full">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+
+
+
+                    <div class="mt-8">
+                        <h4 class="text-sm font-bold text-gray-700 mb-4 italic">Detail Ringkasan Bulanan:</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2">Bulan</th>
+                                        <th class="px-4 py-2">Pendapatan</th>
+                                        <th class="px-4 py-2">Transaksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($monthlySalesOverview as $r)
+                                        <tr class="border-t">
+                                            <td class="px-4 py-2">{{ $r->period }}</td>
+                                            <td class="px-4 py-2 font-bold text-indigo-600">Rp
+                                                {{ number_format($r->revenue, 0, ',', '.') }}</td>
+                                            <td class="px-4 py-2">{{ $r->cnt }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            @endforeach
-        </div>
 
-        {{-- 3. Area Data Detail (Grafik & Tabel) --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {{-- Grafik Penjualan (2/3 Lebar) --}}
-            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-gray-100 min-h-[380px] flex flex-col">
-                <div class="flex justify-between items-center mb-6 border-b pb-3">
-                    <h3 class="font-extrabold text-gray-800 text-lg flex items-center"><i class="ri-line-chart-fill mr-2 text-indigo-500"></i> Statistik Penjualan 7 Hari Terakhir</h3>
-                    <button class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Lihat Detail</button>
+                {{-- Produk Terlaris --}}
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col">
+                    <h3 class="font-extrabold text-gray-800 text-lg mb-6 flex items-center border-b pb-3">
+                        <i class="ri-trophy-line mr-2 text-yellow-500"></i> Top 5 Produk (30 Hari)
+                    </h3>
+                    <ul class="space-y-4 flex-1">
+                        @forelse($topProducts as $product)
+                            <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                <div class="flex items-center">
+                                    <span class="font-black text-lg mr-3 text-indigo-300">#{{ $loop->iteration }}</span>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">{{ $product->product_name }}</p>
+                                        <p class="text-xs text-green-600 font-bold">{{ $product->total_quantity_sold }}
+                                            Terjual</p>
+                                    </div>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="text-center py-10 text-gray-400 italic">Belum ada data.</li>
+                        @endforelse
+                    </ul>
                 </div>
-                
-                {{-- Placeholder Chart --}}
-                <div class="flex-1 flex flex-col items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-200 p-8">
-                    <div class="bg-white p-4 rounded-full mb-3 shadow-md">
-                        <i class="ri-bar-chart-grouped-line text-4xl text-blue-400"></i>
+            </div>
+
+            {{-- 4. Operasional: Transaksi & Stok --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="font-extrabold text-gray-800 text-lg mb-4 flex items-center border-b pb-3"><i
+                            class="ri-history-line mr-2 text-indigo-500"></i> 10 Transaksi Terbaru</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                                <tr>
+                                    <th class="px-3 py-2 text-left">ID</th>
+                                    <th class="px-3 py-2 text-left">Kasir</th>
+                                    <th class="px-3 py-2 text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($recentTransactions as $transaction)
+                                    <tr>
+                                        <td class="px-3 py-3 font-mono">#{{ $transaction->transaksi_id }}</td>
+                                        <td class="px-3 py-3">{{ $transaction->kasir->nama ?? 'N/A' }}</td>
+                                        <td class="px-3 py-3 text-right font-bold text-indigo-600">
+                                            Rp{{ number_format($transaction->total, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <p class="text-md font-extrabold text-gray-600">Area Grafik (Chart.js/ApexCharts)</p>
-                    <p class="text-xs text-gray-400 mt-1 italic">Tampilkan tren pendapatan vs pengeluaran.</p>
-                </div>
-            </div>
-
-            {{-- Produk Terlaris (1/3 Lebar) --}}
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 min-h-[380px] flex flex-col">
-                <div class="flex justify-between items-center mb-6 border-b pb-3">
-                    <h3 class="font-extrabold text-gray-800 text-lg flex items-center"><i class="ri-trophy-line mr-2 text-yellow-500"></i> Produk Terlaris</h3>
                 </div>
 
-                {{-- Placeholder List Produk --}}
-                <ul class="space-y-3 flex-1 overflow-y-auto">
-                    {{-- Looping Produk Terlaris --}}
-                    @for($i = 1; $i <= 5; $i++)
-                        <li class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-indigo-50 transition">
-                            <div class="flex items-center">
-                                <span class="font-extrabold text-xl mr-3 text-indigo-500">#{{ $i }}</span>
-                                <div>
-                                    <p class="font-semibold text-gray-800">Nama Produk {{ $i }}</p>
-                                    <p class="text-xs text-gray-500">Kategori • Rp20.000</p>
-                                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h3 class="font-extrabold text-gray-800 text-lg mb-4 flex items-center border-b pb-3"><i
+                            class="ri-alert-line mr-2 text-orange-500"></i> Stok Rendah</h3>
+                    <div class="space-y-3">
+                        @forelse($lowStockProducts as $product)
+                            <div
+                                class="flex justify-between items-center p-3 bg-orange-50 border border-orange-100 rounded-xl">
+                                <span class="font-medium text-gray-700">{{ $product->nama_produk }}</span>
+                                <span
+                                    class="bg-red-500 text-white text-xs px-2 py-1 rounded-lg font-bold">{{ $product->stok }}
+                                    Pcs</span>
                             </div>
-                            <span class="text-sm font-bold text-green-600">{{ rand(50, 200) }} Pcs</span>
-                        </li>
-                    @endfor
-                </ul>
-                <div class="mt-4 text-center">
-                    <a href="#" class="text-sm font-semibold text-indigo-600 hover:underline">Lihat Semua Produk</a>
+                        @empty
+                            <p class="text-center py-10 text-gray-400">Stok aman terkendali.</p>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
-        
-        {{-- 4. Data Operasional: Aktivitas Transaksi Terbaru & Peringatan Stok --}}
-        <h2 class="text-xl font-bold text-gray-800 border-b pb-2 pt-4">Operasional & Logistik</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            {{-- Transaksi Terbaru (Log Operasional) --}}
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                <h3 class="font-extrabold text-gray-800 text-lg mb-6 flex items-center border-b pb-3"><i class="ri-history-line mr-2 text-indigo-500"></i> 10 Transaksi Terbaru</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
-                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kasir</th>
-                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-100">
-                            @for($i=0; $i<5; $i++)
-                            <tr>
-                                <td class="px-3 py-3 whitespace-nowrap font-mono text-gray-900">#{{ 1000 + $i }}</td>
-                                <td class="px-3 py-3 whitespace-nowrap text-gray-600">{{ \Carbon\Carbon::now()->subMinutes(rand(1, 60))->format('H:i') }}</td>
-                                <td class="px-3 py-3 whitespace-nowrap text-gray-600">Kasir {{ rand(1, 3) }}</td>
-                                <td class="px-3 py-3 whitespace-nowrap text-right font-bold text-indigo-600">Rp{{ number_format(rand(10000, 250000), 0, ',', '.') }}</td>
-                            </tr>
-                            @endfor
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4 text-center">
-                    <a href="#" class="text-sm font-semibold text-indigo-600 hover:underline">Lihat Semua Transaksi</a>
-                </div>
-            </div>
-
-            {{-- Peringatan Inventaris/Stok --}}
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                <h3 class="font-extrabold text-gray-800 text-lg mb-6 flex items-center border-b pb-3"><i class="ri-alert-line mr-2 text-orange-500"></i> Peringatan Stok Rendah</h3>
-                <ul class="space-y-3 flex-1 overflow-y-auto">
-                     @for($i = 1; $i <= 4; $i++)
-                        <li class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-200 hover:bg-orange-100 transition">
-                            <div class="flex items-center">
-                                <i class="ri-box-3-line text-2xl mr-3 text-orange-500"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-800">Nama Produk Kurang {{ $i }}</p>
-                                    <p class="text-xs text-gray-500">Stok kritis: 
-                                        <span class="font-bold text-red-600">{{ rand(1, 10) }} pcs</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <a href="#" class="text-xs font-bold text-indigo-600 hover:underline">Isi Stok</a>
-                        </li>
-                    @endfor
-                    <li class="text-center py-4 text-gray-500 italic text-sm">
-                        <i class="ri-check-double-line mr-1"></i> Tidak ada stok yang habis.
-                    </li>
-                </ul>
-                <div class="mt-4 text-center">
-                    <a href="#" class="text-sm font-semibold text-indigo-600 hover:underline">Lihat Semua Inventaris</a>
-                </div>
-            </div>
-        </div>
-
     </div>
-</div>
+
+    {{-- Scripts --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @json($salesChartData['labels']),
+                datasets: [{
+                    label: 'Pendapatan Harian',
+                    data: @json($salesChartData['data']),
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#4f46e5'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp ' + value.toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
