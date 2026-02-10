@@ -18,6 +18,18 @@ use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'kasir') {
+            return redirect()->route('kasir.dashboard');
+        } elseif ($user->role === 'owner') {
+            return redirect()->route('owner.dashboard');
+        }
+        // Fallback for other roles or if role is not set
+        return redirect()->route('profile.edit'); // Or a generic dashboard
+    }
     return view('auth.login');
 });
 
