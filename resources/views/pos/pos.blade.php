@@ -172,22 +172,22 @@
 
             <div class="mt-4">
                 <label class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2 block">Metode Bayar</label>
-                <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="grid grid-cols-2 gap-2">
                     <label class="cursor-pointer">
-                        <input type="radio" name="pay_method" value="tunai" class="peer sr-only" checked>
+                        <input type="radio" name="pay_method" value="tunai" class="peer sr-only" checked id="tunai_radio" data-pay-method="tunai">
                         <div class="text-center py-2.5 border-2 border-gray-200 rounded-lg peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-100 transition duration-150 text-sm font-bold shadow-sm">
                             💵 Tunai
                         </div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="pay_method" value="qris" class="peer sr-only">
+                        <input type="radio" name="pay_method" value="qris" class="peer sr-only" id="qris_radio" data-pay-method="qris">
                         <div class="text-center py-2.5 border-2 border-gray-200 rounded-lg peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-100 transition duration-150 text-sm font-bold shadow-sm">
-                            📱 QRIS
+                            💳 Non-Tunai
                         </div>
                     </label>
                 </div>
 
-                <div class="mt-3">
+                <div id="nominal_bayar_section" class="mt-3 mb-3">
                     <label class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2 block">Nominal Bayar</label>
                     <input 
                         type="number" 
@@ -275,7 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
         toastMsg: document.getElementById('toast-msg'),
         promoBadge: document.getElementById('promo-badge'),
         appliedPromoName: document.getElementById('applied-promo-name'),
-        payRadios: document.getElementsByName('pay_method')
+        payRadios: document.getElementsByName('pay_method'),
+        nominalBayarSection: document.getElementById('nominal_bayar_section')
     };
 
     // --- HELPERS ---
@@ -295,6 +296,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Auto hide
         setTimeout(() => els.toast.classList.add('hidden'), 3000);
     };
+
+    // --- Nominal Bayar Visibility Toggle ---
+    function toggleNominalBayarVisibility() {
+        const selectedMethod = document.querySelector('input[name="pay_method"]:checked').value;
+        if (selectedMethod === 'tunai') {
+            els.nominalBayarSection.style.display = 'block';
+        } else {
+            els.nominalBayarSection.style.display = 'none';
+        }
+    }
+
+    // Set initial visibility
+    toggleNominalBayarVisibility();
+
+    // Add event listeners to payment method radio buttons
+    for(const radio of els.payRadios) {
+        radio.addEventListener('change', toggleNominalBayarVisibility);
+    }
 
     // --- LOAD & RENDER PRODUCTS ---
     async function loadProducts(q = '') {
@@ -529,17 +548,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- PAYMENT LOGIC ---
     let originalText = '';
     els.btnBayar.addEventListener('click', async () => {
-        if(state.cart.length === 0) return;
+        console.log('Bayar button clicked.'); // Added log
+
+        if(state.cart.length === 0) {
+            console.log('Cart is empty, returning.'); // Added log
+            return;
+        }
 
         // Ambil metode bayar
         let selectedMethod = 'tunai';
         for(const radio of els.payRadios) {
             if(radio.checked) selectedMethod = radio.value;
         }
+        console.log('Selected payment method:', selectedMethod); // Added log
 
         // read nominal bayar (if user inputted) for cash payments
         const bayarRaw = document.getElementById('bayar').value;
         const bayarVal = (typeof bayarRaw === 'string' && bayarRaw.trim().length > 0) ? parseInt(bayarRaw) : null;
+        console.log('Nominal Bayar (raw):', bayarRaw, 'Nominal Bayar (parsed):', bayarVal); // Added log
 
         const payload = {
             items: state.cart,
@@ -549,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // only include nominal_bayar if user actually entered a value
             ...(bayarVal !== null ? { nominal_bayar: bayarVal } : {})
         };
+        console.log('Payload sent to pos.pay:', payload); // Added log
 
         originalText = els.btnBayar.innerHTML;
         els.btnBayar.disabled = true;
@@ -563,42 +590,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(payload)
             });
+            console.log('Response from pos.pay (raw):', res); // Added log
+
             const data = await res.json();
+            console.log('Response from pos.pay (JSON):', data); // Added log
 
             if (!data.success) throw new Error(data.message || 'Transaksi Gagal');
 
             if (selectedMethod === 'tunai') {
                 showToast('Pembayaran Tunai Berhasil!');
-                if(data.invoice_url) window.open(data.invoice_url, '_blank');
+                if(data.invoice_url) {
+                    console.log('Opening invoice for tunai:', data.invoice_url); // Added log
+                    window.open(data.invoice_url, '_blank');
+                }
                 resetPos();
             } else {
                 // MIDTRANS HANDLING
                 if (typeof window.snap === 'undefined') {
+                    console.error('Midtrans Snap JS not loaded.'); // Added log
                     throw new Error('Midtrans Snap JS tidak terload. Periksa koneksi atau Client Key.');
                 }
                 
                 window.snap.pay(data.snap_token, {
                     onSuccess: function(result){
+                        console.log('Midtrans onSuccess:', result); // Added log
                         showToast('Pembayaran Lunas!');
-                        if(data.invoice_url) window.open(data.invoice_url, '_blank');
+                        if(data.transaksi_id) {
+                            const invoiceUrl = `/transaksi/${data.transaksi_id}/invoice`;
+                            console.log('Opening invoice for Midtrans onSuccess:', invoiceUrl); // Added log
+                            window.open(invoiceUrl, '_blank');
+                        }
                         resetPos();
                     },
                     onPending: function(result){
+                        console.log('Midtrans onPending:', result); // Added log
                         showToast('Menunggu Pembayaran...', 'info');
-                        if(data.invoice_url) window.open(data.invoice_url, '_blank');
+                        if(data.transaksi_id) {
+                            const invoiceUrl = `/transaksi/${data.transaksi_id}/invoice`;
+                            console.log('Opening invoice for Midtrans onPending:', invoiceUrl); // Added log
+                            window.open(invoiceUrl, '_blank');
+                        }
                         resetPos();
                     },
                     onError: function(result){
+                        console.error('Midtrans onError:', result); // Added log
                         showToast('Pembayaran Gagal/Dibatalkan', 'error');
                     },
                     onClose: function(){
+                        console.log('Midtrans onClose.'); // Added log
                         els.btnBayar.disabled = false;
                         els.btnBayar.innerHTML = originalText;
                     }
                 });
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error in payment process:', error); // Added log
             showToast(error.message, 'error');
             els.btnBayar.disabled = false;
             els.btnBayar.innerHTML = originalText;

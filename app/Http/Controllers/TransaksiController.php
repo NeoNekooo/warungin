@@ -73,14 +73,7 @@ class TransaksiController extends Controller
 
         // If the transaction is completed immediately (tunai), generate invoice HTML file
         if ($transaksi->status === 'selesai') {
-            // join to produk to include product name for invoice display
-            $items = DB::table('transaksi_detail as td')
-                ->leftJoin('produk as p', 'td.produk_id', '=', 'p.produk_id')
-                ->where('td.transaksi_id', $transaksi->transaksi_id)
-                ->select('td.*', 'p.nama_produk')
-                ->get();
-            $html = view('admin.transaksi.invoice', compact('transaksi', 'items'))->render();
-            Storage::disk('local')->put("invoices/invoice-{$transaksi->transaksi_id}.html", $html);
+            $this->generateInvoiceHtml($transaksi);
         }
 
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan!');
@@ -104,5 +97,17 @@ class TransaksiController extends Controller
             ->select('td.*', 'p.nama_produk')
             ->get();
         return view('admin.transaksi.invoice', compact('transaksi', 'items'));
+    }
+
+    public function generateInvoiceHtml(Transaksi $transaksi)
+    {
+        // include product name with a join so invoice can render proper names
+        $items = DB::table('transaksi_detail as td')
+            ->leftJoin('produk as p', 'td.produk_id', '=', 'p.produk_id')
+            ->where('td.transaksi_id', $transaksi->transaksi_id)
+            ->select('td.*', 'p.nama_produk')
+            ->get();
+        $html = view('admin.transaksi.invoice', compact('transaksi', 'items'))->render();
+        Storage::disk('local')->put("invoices/invoice-{$transaksi->transaksi_id}.html", $html);
     }
 }

@@ -9,14 +9,17 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Pembayaran;
+use App\Http\Controllers\TransaksiController;
 
 class MidtransController extends Controller
 {
     protected MidtransService $midtrans;
+    protected TransaksiController $transaksiController;
 
-    public function __construct(MidtransService $midtrans)
+    public function __construct(MidtransService $midtrans, TransaksiController $transaksiController)
     {
         $this->midtrans = $midtrans;
+        $this->transaksiController = $transaksiController;
         // Require auth and specific roles for all actions except notification (which is public webhook)
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
@@ -117,14 +120,7 @@ class MidtransController extends Controller
                         }
                         // If transaction is now completed, generate invoice HTML for record
                         if ($newStatus === 'selesai') {
-                            // include product name for invoice rendering
-                            $items = DB::table('transaksi_detail as td')
-                                ->leftJoin('produk as p', 'td.produk_id', '=', 'p.produk_id')
-                                ->where('td.transaksi_id', $transaksi->transaksi_id)
-                                ->select('td.*', 'p.nama_produk')
-                                ->get();
-                            $html = view('admin.transaksi.invoice', compact('transaksi', 'items'))->render();
-                            Storage::disk('local')->put("invoices/invoice-{$transaksi->transaksi_id}.html", $html);
+                            $this->transaksiController->generateInvoiceHtml($transaksi);
                         }
                 }
             } else {

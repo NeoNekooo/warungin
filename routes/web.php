@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('stok_log', StokLogController::class);
         // Pembayaran accessible to Admin, Owner, and Kasir (index/show only due to controller logic)
         Route::resource('pembayaran', PembayaranController::class)->only(['index', 'show']);
+        // Invoice view for transaksi (admin, owner, kasir)
+        Route::get('/transaksi/{transaksi}/invoice', [TransaksiController::class, 'invoice'])->name('transaksi.invoice');
     });
 
     // Admin Specific Routes
@@ -65,8 +67,6 @@ Route::middleware('auth')->group(function () {
         // Route::get('/produk/generate-barcode', [ProdukController::class, 'generateBarcode'])->name('produk.generateBarcode');
         // Midtrans checkout for a transaksi (admin may trigger a payment checkout)
         Route::get('/midtrans/checkout/{transaksi}', [MidtransController::class, 'checkout'])->name('midtrans.checkout');
-        // Invoice view for transaksi (admin)
-        Route::get('/transaksi/{transaksi}/invoice', [TransaksiController::class, 'invoice'])->name('transaksi.invoice');
     });
 
     // Kasir Specific Routes

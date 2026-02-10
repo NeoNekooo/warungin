@@ -63,7 +63,7 @@
 
     <div class="text-center mt-6 text-sm font-semibold">-- TERIMA KASIH --</div>
 
-    <div class="mt-4 flex items-center justify-between">
+    <div class="mt-4 flex items-center justify-between no-print">
         <div class="text-xs text-gray-500">Simpan atau cetak bukti ini.</div>
         <div>
             <button id="print-button" onclick="window.print()" class="px-3 py-1 bg-gray-800 text-white rounded text-sm mr-2">Print</button>
@@ -92,6 +92,9 @@
         .print\:p-0 { padding: 0 !important; }
         .print\:shadow-none { box-shadow: none !important; }
         .max-w-sm { width: 100% !important; margin: 0 auto; }
+        .no-print {
+            display: none !important;
+        }
     }
 </style>
 
