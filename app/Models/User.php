@@ -36,4 +36,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // app/Models/User.php
+
+    public function absensis()
+    {
+        // Pastikan nama modelnya adalah Absensi dan foreign key-nya adalah user_id
+        return $this->hasMany(Absensi::class, 'user_id', 'user_id');
+    }
 }

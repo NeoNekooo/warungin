@@ -12,6 +12,7 @@ use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\ManajemenAkunController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\PosController;
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\OwnerDashboardController;
 use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
@@ -68,6 +69,33 @@ Route::middleware('auth')->group(function () {
         Route::resource('pembayaran', PembayaranController::class)->only(['index', 'show']);
         // Invoice view for transaksi (admin, owner, kasir)
         Route::get('/transaksi/{transaksi}/invoice', [TransaksiController::class, 'invoice'])->name('transaksi.invoice');
+        // Absensi user (admin, owner, kasir)
+        // Di routes/web.php
+        Route::group(['prefix' => 'absensi', 'as' => 'absensi.'], function () {
+            // Route Utama (Halaman Scan)
+            Route::get('/', [AbsensiController::class, 'index'])->name('index');
+            Route::post('/store', [AbsensiController::class, 'store'])->name('store');
+
+            // QR Code (only kasir should access)
+            Route::get('/my-qr', function() {
+                return view('absensi.my-qr');
+            })->middleware('role:kasir')->name('myQr');
+
+            // Laporan & Fitur AJAX
+            Route::get('/laporan', [AbsensiController::class, 'laporan'])->name('laporan');
+            Route::get('/latest-data', [AbsensiController::class, 'getLatestAbsensi'])->name('latest');
+
+            // Proses Scan & Logic
+            Route::post('/proses-scan', [AbsensiController::class, 'prosesScan'])->name('prosesScan');
+            Route::post('/simpan', [AbsensiController::class, 'simpanAbsensi'])->name('simpan');
+
+            // --- FITUR BARU: Input Manual & Jadwal ---
+            // Simpan Absensi Manual (Izin/Sakit)
+            Route::post('/store-manual', [AbsensiController::class, 'storeManual'])->name('storeManual');
+            
+            // Simpan Jadwal (Bisa ditaruh di Controller baru atau tetap di AbsensiController)
+            Route::post('/jadwal-store', [AbsensiController::class, 'storeJadwal'])->name('jadwalStore');
+        });
     });
 
     // Admin Specific Routes

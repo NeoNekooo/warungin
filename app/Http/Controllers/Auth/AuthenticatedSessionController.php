@@ -14,20 +14,8 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View|RedirectResponse
+    public function create(): View
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role === 'owner') {
-                return redirect()->route('owner.dashboard');
-            } elseif ($user->role === 'kasir') {
-                return redirect()->route('kasir.dashboard');
-            }
-            // Fallback for other roles or if role is not set
-            return redirect()->route('profile.edit'); // Or a generic dashboard
-        }
         return view('auth.login');
     }
 
@@ -42,10 +30,9 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if ($user->role === 'admin') {
+        if (in_array($user->role, ['admin', 'owner'])) {
+            // admin and owner users share the same admin dashboard
             return redirect()->intended(route('admin.dashboard', absolute: false));
-        } elseif ($user->role === 'owner') {
-            return redirect()->intended(route('owner.dashboard', absolute: false));
         } elseif ($user->role === 'kasir') {
             return redirect()->intended(route('kasir.dashboard', absolute: false));
         }

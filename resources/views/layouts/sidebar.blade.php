@@ -205,7 +205,7 @@
                 Pengaturan
             </div>
 
-            {{-- Manajemen Akun --}}
+            {{-- Pengaturan --}}
             <a href="{{ route('manajemen_akun.index') }}"
                 class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('manajemen_akun.index') }}"
                 @click="!isDesktop && toggle()">
@@ -213,6 +213,29 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
                 <span class="ml-3">Manajemen Akun</span>
+            </a>
+
+            <div class="text-xs uppercase font-extrabold text-indigo-400 opacity-80 mt-6 mb-1 tracking-wider pt-2 border-t border-gray-100">
+                Absensi
+            </div>
+
+            {{-- Absensi QR --}}
+            <a href="{{ route('absensi.index') }}"
+                class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('absensi.index') }}"
+                @click="!isDesktop && toggle()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
+                </svg>
+                <span class="ml-3">Absensi QR</span>
+            </a>
+            <a href="{{ route('absensi.laporan') }}"
+                class="flex items-center px-4 py-2.5 rounded-lg transition duration-150 ease-in-out transform hover:scale-[1.01] {{ isActive('laporan.index') }}"
+                @click="!isDesktop && toggle()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                <span class="ml-3">Laporan Absensi</span>
             </a>
             @endif
 
@@ -375,6 +398,18 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25m0-1.5H5.25M6 4.5h.75A2.25 2.25 0 0 1 9 6.75V16.5M6 4.5V3m0 3.75v3m0 3.75v3m0-11.25H9.75M12 4.5h.75A2.25 2.25 0 0 1 15 6.75V16.5M12 4.5v3m0 3.75v3m0 3.75v3m0-11.25H15.75" />
                 </svg>
                 <span class="ml-3">Laporan & Analitik</span>
+            </a>
+            @endif
+            
+            @if (Auth::user()->role === 'kasir')
+            <a href="{{ route('absensi.myQr') }}" 
+               class="flex items-center px-4 py-2.5 mb-3 rounded-lg text-indigo-700 font-semibold bg-indigo-100 hover:bg-indigo-200 transition duration-150 ease-in-out"
+               @click="!isDesktop && toggle()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
+                </svg>
+                <span class="ml-3">My-QR</span>
             </a>
             @endif
 
