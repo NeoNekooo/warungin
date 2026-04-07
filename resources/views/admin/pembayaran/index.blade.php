@@ -74,8 +74,8 @@
                             if ($metode === 'tunai') {
                                 $class = 'bg-green-100 text-green-700 border-green-300';
                                 $icon = 'ri-money-line';
-                            } elseif ($metode === 'qris') {
-                                $class = 'bg-blue-100 text-blue-700 border-blue-300';
+                            } elseif (in_array($metode, ['non-tunai', 'qris', 'midtrans'])) {
+                                $class = 'bg-indigo-100 text-indigo-700 border-indigo-300';
                                 $icon = 'ri-qr-code-line';
                             } else {
                                 $class = 'bg-purple-100 text-purple-700 border-purple-300';
@@ -83,7 +83,7 @@
                             }
                         @endphp
                         <span class="px-3 py-1 text-xs font-bold rounded-full border {{ $class }} whitespace-nowrap">
-                            <i class="{{ $icon }} mr-1"></i> {{ ucfirst($pay->metode) }}
+                            <i class="{{ $icon }} mr-1"></i> {{ ($metode === 'qris' || $metode === 'non-tunai') ? 'Non-Tunai' : ucfirst($pay->metode) }}
                         </span>
                     </td>
 
@@ -167,9 +167,8 @@
                             <label class="block text-gray-700 text-sm font-bold mb-2">Metode Pembayaran</label>
                             <select name="metode" class="w-full px-4 py-2.5 rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">Semua Metode</option>
-                                <option value="Tunai" {{ request('metode') == 'Tunai' ? 'selected' : '' }}>Tunai</option>
-                                <option value="Qris" {{ request('metode') == 'Qris' ? 'selected' : '' }}>Qris</option>
-                                <option value="Transfer" {{ request('metode') == 'Transfer' ? 'selected' : '' }}>Transfer / Bank</option>
+                                <option value="tunai" {{ request('metode') == 'tunai' ? 'selected' : '' }}>💵 Tunai</option>
+                                <option value="non-tunai" {{ request('metode') == 'non-tunai' ? 'selected' : '' }}>💳 Non-Tunai (Midtrans)</option>
                             </select>
                         </div>
 

@@ -28,9 +28,13 @@ class PembayaranController extends Controller
     {
         $query = Pembayaran::with('transaksi');
 
-        // Filter berdasarkan Metode
+        // Filter berdasarkan Metode (Sadar data lama & Non-Tunai)
         if ($request->filled('metode')) {
-            $query->where('metode', $request->metode);
+            if ($request->metode === 'non-tunai') {
+                $query->whereIn('metode', ['non-tunai', 'qris', 'transfer', 'midtrans']);
+            } else {
+                $query->where('metode', $request->metode);
+            }
         }
 
         // Filter berdasarkan Rentang Tanggal

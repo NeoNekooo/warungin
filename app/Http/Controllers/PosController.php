@@ -77,7 +77,7 @@ class PosController extends Controller
             'items' => 'required|array|min:1',
             'items.*.produk_id' => 'required|integer',
             'items.*.jumlah' => 'required|integer|min:1',
-            'metode_bayar' => 'required|in:tunai,qris,transfer',
+            'metode_bayar' => 'required|in:tunai,non-tunai,qris,transfer',
             'pelanggan_id' => 'nullable|integer',
             'nominal_bayar' => 'nullable|numeric|min:0',
         ]);
@@ -178,10 +178,11 @@ class PosController extends Controller
                     'referensi' => null,
                 ]);
             } else {
-                // For gateway payments (midtrans/qris) create a pending pembayaran with order reference
+                // For gateway payments (midtrans/non-tunai)
+                $methodName = in_array($data['metode_bayar'], ['non-tunai', 'qris', 'transfer']) ? 'non-tunai' : 'midtrans';
                 Pembayaran::create([
                     'transaksi_id' => $transaksi->transaksi_id,
-                    'metode' => ($data['metode_bayar'] === 'qris') ? 'qris' : 'midtrans',
+                    'metode' => $methodName,
                     'jumlah' => 0,
                     'referensi' => $orderId,
                 ]);

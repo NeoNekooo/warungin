@@ -182,7 +182,7 @@
                         </div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="pay_method" value="qris" class="peer sr-only" id="qris_radio" data-pay-method="qris">
+                        <input type="radio" name="pay_method" value="non-tunai" class="peer sr-only" id="qris_radio" data-pay-method="non-tunai">
                         <div class="text-center py-2.5 border-2 border-gray-200 rounded-lg peer-checked:bg-indigo-50 peer-checked:border-indigo-500 peer-checked:text-indigo-700 hover:bg-gray-100 transition duration-150 text-sm font-bold shadow-sm">
                             💳 Non-Tunai
                         </div>
