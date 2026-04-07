@@ -247,8 +247,9 @@
                             </div>
 
                             <div class="col-span-2">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Gambar</label>
-                                <input type="file" name="gambar" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="previewImage(event, 'add_preview_img', 'add_preview_div')">
+                                <label for="gambar_add" class="block text-sm font-bold text-gray-700 mb-2">Foto Produk</label>
+                                <input type="file" id="gambar_add" name="gambar" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" onchange="previewImage(event, 'add_preview_img', 'add_preview_div')">
+                                <p class="mt-1 text-xs text-gray-500 italic">Format: JPG, PNG, WEBP. Maksimal: 2MB.</p>
                                 <div id="add_preview_div" class="hidden mt-2 h-32 w-32 rounded-xl border border-gray-200 p-1 bg-white shadow-sm">
                                     <img id="add_preview_img" src="#" class="h-full w-full rounded-lg object-cover">
                                 </div>
@@ -357,7 +358,7 @@
                             <div class="col-span-2">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Ganti Gambar (Opsional)</label>
                                 <input type="file" name="gambar" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="previewImage(event, 'edit_image_preview_img', 'edit_image_preview_container')">
-                                
+                                <p class="mt-1 text-xs text-gray-500 italic">Format: JPG, PNG, WEBP. Maksimal: 2MB.</p>
                                 <div id="edit_image_preview_container" class="hidden mt-3 h-32 w-32 rounded-xl border border-gray-200 p-1 bg-white shadow-sm">
                                     <img id="edit_image_preview_img" src="#" class="h-full w-full rounded-lg object-cover">
                                 </div>
