@@ -18,7 +18,8 @@ class KategoriController extends Controller
         // Only admin can manage categories
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
-            if (!$user || $user->role !== 'admin') return abort(403);
+            $allowed = ['admin', 'owner', 'kasir'];
+            if (!$user || !in_array($user->role, ['admin', 'owner'])) return abort(403);
             return $next($request);
         })->except(['index']);
     }

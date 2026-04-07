@@ -29,7 +29,7 @@
         </div>
 
         <div class="w-full md:w-auto flex justify-end">
-            @role('admin')
+            @role('admin|owner')
             <button onclick="openModal('modalAdd')" class="group bg-indigo-600 text-white px-6 py-3 rounded-xl transition-all shadow-md hover:bg-indigo-700 hover:shadow-lg flex items-center font-semibold text-base w-full md:w-auto">
                 <i class="ri-add-line mr-2 text-xl group-hover:rotate-90 transition-transform"></i> 
                 Tambah Kategori Baru

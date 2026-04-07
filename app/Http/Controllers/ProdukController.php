@@ -18,7 +18,7 @@ class ProdukController extends Controller
             $user = auth()->user();
             if (!$user) return abort(403);
             $role = $user->role;
-            $allowed = ['admin', 'kasir'];
+            $allowed = ['admin', 'owner', 'kasir'];
             // If route is a mutating action, ensure role is allowed
             $action = $request->route()->getActionMethod();
             if (in_array($action, ['store', 'update', 'destroy'])) {
