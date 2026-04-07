@@ -101,7 +101,7 @@
                     
                     {{-- Status --}}
                     <td class="px-5 py-3.5 text-center">
-                         @if(strtolower($user->status) == 'aktif')
+                         @if((string)$user->status === '1')
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 ring-1 ring-green-300">Aktif</span>
                         @else
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-500 ring-1 ring-gray-300">Non-aktif</span>
@@ -188,8 +188,8 @@
             <div>
                 <label for="status_add" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
                 <select id="status_add" name="status" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
+                    <option value="1">Aktif</option>
+                    <option value="0">Nonaktif</option>
                 </select>
             </div>
             
@@ -245,8 +245,8 @@
             <div>
                 <label for="status_edit" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
                 <select id="status_edit" name="status" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
+                    <option value="1">Aktif</option>
+                    <option value="0">Nonaktif</option>
                 </select>
             </div>
             
@@ -308,7 +308,7 @@
         document.getElementById('username_edit').value = user.username;
         document.getElementById('email_edit').value = user.email;
         document.getElementById('role_edit').value = user.role.toLowerCase();
-        document.getElementById('status_edit').value = user.status.toLowerCase();
+        document.getElementById('status_edit').value = user.status;
         document.getElementById('no_hp_edit').value = user.no_hp || '';
         document.getElementById('password_edit').value = ''; // Kosongkan password
 

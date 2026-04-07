@@ -36,7 +36,7 @@ class ManajemenAkunController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'role' => 'required|in:admin,owner,kasir',
             'no_hp' => 'nullable|string|max:255',
-            'status' => 'required|in:aktif,nonaktif',
+            'status' => 'required|in:1,0',
             'password' => 'required|string|min:8',
         ]);
 
@@ -66,7 +66,7 @@ class ManajemenAkunController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->user_id.',user_id',
             'role' => 'required|in:admin,owner,kasir',
             'no_hp' => 'nullable|string|max:255',
-            'status' => 'required|in:aktif,nonaktif',
+            'status' => 'required|in:1,0',
             'password' => 'nullable|string|min:8',
         ]);
 
