@@ -487,7 +487,7 @@
         </header>
 
         {{-- Konten Utama Halaman --}}
-        <main class="flex-1 {{ request()->routeIs('pos.index') ? '' : 'p-6' }} overflow-y-visible">
+        <main class="flex-1 flex flex-col h-full {{ request()->routeIs('pos.index') ? '' : 'p-6' }} overflow-y-visible">
             @yield('content')
         </main>
 

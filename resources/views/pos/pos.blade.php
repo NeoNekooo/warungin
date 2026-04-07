@@ -9,11 +9,11 @@
 
 
 
-<div class="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased">
+<div class="flex h-full bg-gray-50 overflow-hidden font-sans antialiased">
     
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
-        <div class="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between shrink-0 z-10 shadow-sm">
+        <div class="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between shrink-0 z-30 shadow-sm">
             
             <div>
                 <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">Warungin POS</h1>
