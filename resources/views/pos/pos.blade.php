@@ -9,7 +9,7 @@
 
 @endphp
 
-<div class="flex h-[calc(100vh-112px)] bg-gray-50 overflow-hidden font-sans antialiased rounded-2xl shadow-inner border border-gray-100">
+<div class="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased">
     
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         
@@ -55,10 +55,10 @@
         <div class="flex-1 overflow-y-auto p-6 scroll-smooth bg-gray-50" id="main-scroll">
             <div class="grid grid-cols-12 gap-6">
                 
-                <div class="col-span-12 xl:col-span-4 lg:col-span-5 order-2 lg:order-1">
+                <div class="col-span-12 xl:col-span-3 lg:col-span-4 order-2 lg:order-1">
                     @php $promos = isset($promos) ? $promos : collect(); @endphp
                     @if($promos->isNotEmpty())
-                        <div class="bg-white p-5 rounded-xl shadow-lg border border-orange-100 h-full flex flex-col">
+                        <div class="bg-white p-5 rounded-xl shadow-lg border border-orange-100 h-full">
                             <div class="space-y-4">
                                 <h3 class="text-lg font-extrabold text-orange-600 flex items-center gap-2 pb-2 border-b-2 border-orange-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
@@ -70,7 +70,7 @@
                                             $pDiscount = $promo->discount ?? ($promo->diskon ?? null);
                                             $pPercent = $promo->percent ?? ($promo->percentage ?? null);
                                         @endphp
-                                        <div class="promo-card group relative bg-orange-50 border border-dashed border-orange-300 rounded-lg p-3 cursor-pointer hover:bg-orange-100 hover:border-orange-500 transition-all shadow-sm transform hover:scale-[1.01]"
+                                        <div class="promo-card group relative bg-orange-50 border border-dashed border-orange-300 rounded-lg p-2.5 cursor-pointer hover:bg-orange-100 hover:border-orange-500 transition-all shadow-sm transform hover:scale-[1.01]"
                                              data-promo-id="{{ $promo->id }}" 
                                              data-name="{{ $promo->name ?? 'Promo' }}" 
                                              data-discount="{{ $pDiscount }}" 
@@ -82,7 +82,7 @@
                                             <div class="flex justify-between items-start pl-1">
                                                 <div>
                                                     <h4 class="font-bold text-gray-800 text-sm group-hover:text-orange-700">{{ $promo->name }}</h4>
-                                                    <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">{{ $promo->description }}</p>
+                                                    <p class="text-[11px] leading-tight text-gray-500 mt-0.5 line-clamp-2">{{ $promo->description }}</p>
                                                 </div>
                                                 <div class="bg-orange-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-full shadow-md">
                                                     @if($pPercent) {{ $pPercent }}% @else Rp{{ number_format($pDiscount/1000) }}k @endif
@@ -96,7 +96,7 @@
                     @endif
                 </div>
 
-                <div class="col-span-12 xl:col-span-8 lg:col-span-7 order-1 lg:order-2">
+                <div class="col-span-12 xl:col-span-9 lg:col-span-8 order-1 lg:order-2">
                     <div id="loading-skeleton" class="hidden grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                          @for($i=0; $i<8; $i++)
                             <div class="bg-white rounded-xl p-3 shadow-lg animate-pulse h-64">
@@ -122,7 +122,7 @@
         </div>
     </div>
 
-    <aside class="w-80 lg:w-96 bg-white border-l border-gray-100 shadow-2xl flex flex-col shrink-0 z-20 h-full">
+    <aside class="w-96 bg-white border-l border-gray-100 shadow-xl flex flex-col shrink-0 z-20 h-full">
         
         <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
             <div>

@@ -467,7 +467,18 @@
 
     // Tampilkan toast jika ada session success
     @if(session('success')) showToast("{{ session('success') }}"); @endif
+    @if(session('error')) showToast("{{ session('error') }}", "error"); @endif
     
+    // --- AUTO OPEN MODAL ON ERROR ---
+    @if($errors->any())
+        document.addEventListener('DOMContentLoaded', () => {
+            // Jika ada error, kita buka lagi modal yang kemungkinan baru saja disubmit
+            // Biasanya user sedang di modalAdd atau modalEdit
+            // Kita coba buka modalAdd sebagai default jika ada error
+            openModal('modalAdd');
+        });
+    @endif
+
     // --- BARCODE GENERATOR ---
     function generateBarcode(code, svgId, previewDivId) {
         if (code && code.length > 5) {
