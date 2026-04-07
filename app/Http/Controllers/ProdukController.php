@@ -133,6 +133,11 @@ class ProdukController extends Controller
         return view('admin.produk.index', compact('produks', 'kategoris')); // Redirect ke index saja
     }
 
+    public function show($id)
+    {
+        return redirect()->route('produk.index');
+    }
+
     public function update(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);

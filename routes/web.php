@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     // Admin & Owner & Kasir Group
     Route::middleware('role:admin|owner|kasir')->group(function () {
         // Produk management accessible to Admin, Owner, and Kasir
-        Route::resource('produk', ProdukController::class);
+        Route::resource('produk', ProdukController::class)->except(['show']);
         // Generate a new unique barcode string for product creation (AJAX)
         Route::get('/produk/generate-barcode', [ProdukController::class, 'generateBarcode'])->name('produk.generateBarcode');
         // Pelanggan accessible to Admin, Owner, and Kasir
