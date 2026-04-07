@@ -12,7 +12,7 @@ class PelangganController extends Controller
         // Roles admin, owner, and kasir may manage pelanggan
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
-            if (!$user || !in_array($user->role, ['admin', 'owner', 'kasir'])) return abort(403);
+            if (!$user || !in_array($user->role, ['admin', 'kasir'])) return abort(403);
             return $next($request);
         })->only(['create','store','edit','update','destroy']);
     }

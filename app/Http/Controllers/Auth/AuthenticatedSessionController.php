@@ -30,9 +30,10 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if (in_array($user->role, ['admin', 'owner'])) {
-            // admin and owner users share the same admin dashboard
+        if ($user->role === 'admin') {
             return redirect()->intended(route('admin.dashboard', absolute: false));
+        } elseif ($user->role === 'owner') {
+            return redirect()->intended(route('owner.dashboard', absolute: false));
         } elseif ($user->role === 'kasir') {
             return redirect()->intended(route('kasir.dashboard', absolute: false));
         }

@@ -49,12 +49,14 @@
             </div>
         </div>
 
+        @if(auth()->user()->role !== 'owner')
         <div class="w-full md:w-auto flex justify-end">
             <button @click="openModal('modalAddPelanggan')" class="group bg-indigo-600 text-white px-6 py-3 rounded-xl transition-all shadow-md hover:bg-indigo-700 hover:shadow-lg flex items-center font-semibold text-base w-full md:w-auto">
                 <i class="ri-add-line mr-2 text-xl group-hover:rotate-90 transition-transform"></i> 
                 Tambah Pelanggan Baru
             </button>
         </div>
+        @endif
     </div>
     
     <div class="flex flex-col gap-6">
@@ -73,7 +75,9 @@
                             <th class="px-6 py-4 font-bold hidden lg:table-cell">Alamat</th>
                             <th class="px-6 py-4 font-bold text-center w-24">Level</th>
                             <th class="px-6 py-4 font-bold text-center w-24">Poin</th>
+                            @if(auth()->user()->role !== 'owner')
                             <th class="px-6 py-4 font-bold text-center w-32">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="text-gray-700 text-sm divide-y divide-gray-100">
@@ -110,6 +114,7 @@
                             <td class="px-6 py-4 text-center font-bold text-base text-green-700">
                                 {{ number_format($pelanggan->poin, 0, ',', '.') }}
                             </td>
+                            @if(auth()->user()->role !== 'owner')
                             <td class="px-6 py-4 text-center">
                                 <div class="flex justify-center gap-2">
                                     <button 
@@ -127,6 +132,7 @@
                                     </button>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                         @empty
                         <tr>
@@ -160,6 +166,7 @@
                                 <p class="text-base font-semibold text-gray-800">{{ $pelanggan->nama_pelanggan }}</p>
                             </div>
                         </div>
+                        @if(auth()->user()->role !== 'owner')
                         <div class="flex gap-1 flex-shrink-0">
                             <button 
                                 @click="setEditPelanggan({{ json_encode($pelanggan) }})"
@@ -174,6 +181,7 @@
                                 <i class="ri-delete-bin-line text-lg"></i>
                             </button>
                         </div>
+                        @endif
                     </div>
                     <div class="grid grid-cols-2 gap-3 border-t border-dashed pt-2">
                         <div>
