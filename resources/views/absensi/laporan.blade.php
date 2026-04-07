@@ -36,9 +36,9 @@
             </button>
 
             {{-- Tombol Export --}}
-            <button class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition duration-200 shadow-lg shadow-green-100">
-                <i class="ri-file-excel-2-fill mr-2"></i> Export
-            </button>
+            <a href="{{ route('absensi.export', request()->all()) }}" class="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition duration-200 shadow-lg shadow-green-100 uppercase tracking-tighter">
+                <i class="ri-file-excel-2-fill mr-2"></i> Export Excel
+            </a>
         </div>
     </div>
 
@@ -55,7 +55,7 @@
 
     {{-- Filter Section --}}
 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
-    <form id="filterForm" action="{{ route('absensi.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+    <form id="filterForm" action="{{ route('absensi.laporan') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
         <div class="md:col-span-3">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1">
                 <i class="ri-calendar-line mr-1"></i> Dari Tanggal
@@ -90,7 +90,7 @@
             <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition duration-200 flex items-center justify-center shadow-md shadow-indigo-100">
                 <i class="ri-search-line mr-2"></i> Cari
             </button>
-            <a href="{{ route('absensi.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl transition duration-200 flex items-center justify-center" title="Reset Filter">
+            <a href="{{ route('absensi.laporan') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl transition duration-200 flex items-center justify-center" title="Reset Filter">
                 <i class="ri-refresh-line"></i>
             </a>
         </div>

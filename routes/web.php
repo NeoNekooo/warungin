@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
 
             // Laporan & Fitur AJAX
             Route::get('/laporan', [AbsensiController::class, 'laporan'])->name('laporan');
+            Route::get('/export', [AbsensiController::class, 'exportExcel'])->name('export');
             Route::get('/latest-data', [AbsensiController::class, 'getLatestAbsensi'])->name('latest');
 
             // Proses Scan & Logic

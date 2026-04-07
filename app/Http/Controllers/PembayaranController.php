@@ -24,9 +24,43 @@ class PembayaranController extends Controller
             return $next($request);
         })->only(['reconcile']);
     }
-     public function index()
+    public function index(Request $request)
     {
-        $pembayarans = Pembayaran::with('transaksi')->orderBy('created_at', 'desc')->paginate(20);
+        $query = Pembayaran::with('transaksi');
+
+        // Filter berdasarkan Metode
+        if ($request->filled('metode')) {
+            $query->where('metode', $request->metode);
+        }
+
+        // Filter berdasarkan Rentang Tanggal
+        if ($request->filled('date_start')) {
+            $query->whereDate('created_at', '>=', $request->date_start);
+        }
+        if ($request->filled('date_end')) {
+            $query->whereDate('created_at', '<=', $request->date_end);
+        }
+
+        // Filter berdasarkan Nominal Jumlah
+        if ($request->filled('min_amount')) {
+            $query->where('jumlah', '>=', $request->min_amount);
+        }
+        if ($request->filled('max_amount')) {
+            $query->where('jumlah', '<=', $request->max_amount);
+        }
+
+        // Filter berdasarkan ID Transaksi atau Referensi (Pencarian Cepat)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('transaksi_id', 'like', "%{$search}%")
+                  ->orWhere('referensi', 'like', "%{$search}%")
+                  ->orWhere('metode', 'like', "%{$search}%");
+            });
+        }
+
+        $pembayarans = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        
         return view('admin.pembayaran.index', compact('pembayarans'));
     }
 

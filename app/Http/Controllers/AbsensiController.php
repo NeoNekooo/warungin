@@ -8,6 +8,12 @@ use App\Models\Absensi;
 use App\Models\JadwalAbsensi;
 use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class AbsensiController extends Controller
 {
@@ -288,11 +294,22 @@ public function laporan(Request $request)
         ]
     );
 
-    // ... sisa logic filter dan pagination Anda ...
     $query = \App\Models\Absensi::with(['user', 'admin']);
-    // ...
-    
-    $absensis = $query->latest('waktu_scan')->paginate(15);
+
+    // Filter berdasarkan Rentang Tanggal
+    if ($request->filled('start_date')) {
+        $query->whereDate('waktu_scan', '>=', $request->start_date);
+    }
+    if ($request->filled('end_date')) {
+        $query->whereDate('waktu_scan', '<=', $request->end_date);
+    }
+
+    // Filter berdasarkan Status Kehadiran
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    $absensis = $query->latest('waktu_scan')->paginate(15)->withQueryString();
     $karyawans = \App\Models\User::where('role', 'kasir')->where('status', 1)->get();
 
     return view('absensi.laporan', compact('absensis', 'karyawans', 'jadwal'));
@@ -385,5 +402,116 @@ public function laporan(Request $request)
     }
 
     return redirect()->back()->with('success', $pesan);
+}
+
+public function exportExcel(Request $request)
+{
+    $fileName = 'laporan-absensi-' . date('Y-m-d') . '.xlsx';
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Laporan Absensi');
+
+    // --- 1. HEADER (Logo & Title) ---
+    $lastCol = 'I'; // A to I
+
+    // Drawing Logo
+    $logoPath = public_path('assets/img/logo.png');
+    if (file_exists($logoPath)) {
+        $drawing = new Drawing();
+        $drawing->setName('Logo Warungin');
+        $drawing->setDescription('Logo');
+        $drawing->setPath($logoPath);
+        $drawing->setHeight(70);
+        $drawing->setCoordinates('A1');
+        $drawing->setOffsetX(330); 
+        $drawing->setOffsetY(5);
+        $drawing->setWorksheet($sheet);
+    }
+    $sheet->getRowDimension(1)->setRowHeight(60);
+
+    // Title "WARUNGIN" 
+    $sheet->mergeCells("A2:{$lastCol}2");
+    $sheet->setCellValue('A2', 'WARUNGIN');
+    $sheet->getStyle('A2')->applyFromArray([
+        'font' => ['bold' => true, 'size' => 24, 'color' => ['rgb' => '4F46E5']],
+        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER]
+    ]);
+
+    // Subtitle
+    $sheet->mergeCells("A3:{$lastCol}3");
+    $sheet->setCellValue('A3', 'LAPORAN ABSENSI KARYAWAN');
+    $sheet->getStyle('A3')->applyFromArray([
+        'font' => ['bold' => true, 'size' => 14],
+        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+    ]);
+
+    // Metadata Filter
+    $filterText = 'Periode: ' . ($request->start_date ?? 'Semua') . ' s/d ' . ($request->end_date ?? 'Semua');
+    if ($request->filled('status')) {
+        $filterText .= ' | Status: ' . strtoupper($request->status);
+    }
+    $sheet->mergeCells("A4:{$lastCol}4");
+    $sheet->setCellValue('A4', $filterText);
+    $sheet->getStyle('A4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+    // --- 2. TABLE HEADERS ---
+    $startRow = 6;
+    $columns = ['No', 'Nama Karyawan', 'Role', 'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Status', 'Keterangan', 'Petugas Scan'];
+    
+    $colIdx = 'A';
+    foreach ($columns as $column) {
+        $cell = $colIdx . $startRow;
+        $sheet->setCellValue($cell, $column);
+        $sheet->getStyle($cell)->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4F46E5']],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+        ]);
+        $colIdx++;
+    }
+
+    // --- 3. DATA ROWS ---
+    $query = \App\Models\Absensi::with(['user', 'admin']);
+    if ($request->filled('start_date')) $query->whereDate('waktu_scan', '>=', $request->start_date);
+    if ($request->filled('end_date')) $query->whereDate('waktu_scan', '<=', $request->end_date);
+    if ($request->filled('status')) $query->where('status', $request->status);
+    
+    $data = $query->orderBy('waktu_scan', 'desc')->get();
+
+    $currentRow = $startRow + 1;
+    foreach ($data as $index => $row) {
+        $sheet->setCellValue('A' . $currentRow, $index + 1);
+        $sheet->setCellValue('B' . $currentRow, $row->user->nama ?? 'N/A');
+        $sheet->setCellValue('C' . $currentRow, ucfirst($row->user->role ?? 'Staff'));
+        $sheet->setCellValue('D' . $currentRow, Carbon::parse($row->waktu_scan)->format('d/m/Y'));
+        $sheet->setCellValue('E' . $currentRow, Carbon::parse($row->waktu_scan)->format('H:i:s'));
+        $sheet->setCellValue('F' . $currentRow, $row->jam_pulang ? Carbon::parse($row->jam_pulang)->format('H:i:s') : '-');
+        $sheet->setCellValue('G' . $currentRow, strtoupper($row->status));
+        $sheet->setCellValue('H' . $currentRow, $row->keterangan ?? 'N/A');
+        $sheet->setCellValue('I' . $currentRow, $row->admin->nama ?? 'Sistem QR');
+
+        // Styling Border & Alignment
+        $sheet->getStyle("A$currentRow:I$currentRow")->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'alignment' => ['vertical' => Alignment::VERTICAL_CENTER]
+        ]);
+        $sheet->getStyle("G$currentRow")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $currentRow++;
+    }
+
+    // Auto-Size & A4 Setup
+    foreach (range('A', 'I') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+    
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="' . $fileName . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
+    exit;
 }
 }
