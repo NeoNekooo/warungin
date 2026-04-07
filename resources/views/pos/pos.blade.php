@@ -7,7 +7,7 @@
     $snapUrl = $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
 @endphp
 
-@endphp
+
 
 <div class="flex h-screen bg-gray-50 overflow-hidden font-sans antialiased">
     
