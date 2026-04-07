@@ -517,19 +517,31 @@
         generateBarcode(this.value, 'edit_barcode_svg', 'edit_barcode_preview');
     });
 
-    // --- PREVIEW IMAGE ---
+    // --- PREVIEW IMAGE & SIZE VALIDATION ---
     function previewImage(event, imgId, containerId) {
         const input = event.target;
         const previewDiv = document.getElementById(containerId);
         const previewImg = document.getElementById(imgId);
         
         if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const maxSize = 2 * 1024 * 1024; // 2MB
+
+            // Validasi Ukuran File
+            if (file.size > maxSize) {
+                showToast("File terlalu besar! Maksimal 2MB ya Tuan. ✨", "error");
+                input.value = ""; // Kosongkan input
+                previewDiv.classList.add('hidden');
+                previewImg.src = '';
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 previewImg.src = e.target.result;
                 previewDiv.classList.remove('hidden');
             }
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         } else {
             // Jika file dihapus/dibatalkan, sembunyikan preview
             previewDiv.classList.add('hidden');
