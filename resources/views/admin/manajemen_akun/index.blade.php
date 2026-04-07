@@ -112,12 +112,12 @@
                     <td class="px-5 py-3.5 text-center">
                         <div class="flex justify-center space-x-2">
                             {{-- Tombol Edit --}}
-                            <button onclick="openModal('modalEdit')" class="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition" title="Edit Akun">
+                            <button onclick="editAccount({{ json_encode($user) }})" class="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition" title="Edit Akun">
                                 <i class="ri-edit-2-line text-lg"></i>
                             </button>
                             
                             {{-- Tombol Hapus --}}
-                            <button onclick="openModal('modalDelete')" class="p-2 text-red-600 hover:bg-red-100 rounded-full transition" title="Hapus Akun">
+                            <button onclick="deleteAccount({{ json_encode($user) }})" class="p-2 text-red-600 hover:bg-red-100 rounded-full transition" title="Hapus Akun">
                                 <i class="ri-delete-bin-6-line text-lg"></i>
                             </button>
                         </div>
@@ -302,46 +302,29 @@
         }, 300);
     }
 
-    // Contoh fungsi untuk mengisi data modal edit sebelum dibuka (Anda perlu menyesuaikan ini)
-    document.querySelectorAll('tr').forEach(row => {
-        row.querySelector('.flex.justify-center button:nth-child(1)')?.addEventListener('click', function() {
-            // Asumsi: Ambil data dari atribut data pada baris tabel (misalnya, data-id, data-nama, dll.)
-            // Ini hanyalah placeholder. Anda harus menyesuaikan cara pengambilan data di proyek Anda.
-            const userId = 1; // Ganti dengan logika pengambilan ID
-            const userName = 'Contoh Admin'; // Ganti dengan logika pengambilan nama
-            const userEmail = 'admin@example.com'; // Ganti dengan logika pengambilan email
-            const userRole = 'admin'; // Ganti dengan logika pengambilan role
-            const userStatus = 'aktif'; // Ganti dengan logika pengambilan status
-            const userNoHp = '08123456789'; // Ganti dengan logika pengambilan no_hp
-            const userUsername = 'contoh_admin'; // Ganti dengan logika pengambilan username
+    function editAccount(user) {
+        document.getElementById('user_id_edit').value = user.user_id;
+        document.getElementById('nama_edit').value = user.nama;
+        document.getElementById('username_edit').value = user.username;
+        document.getElementById('email_edit').value = user.email;
+        document.getElementById('role_edit').value = user.role.toLowerCase();
+        document.getElementById('status_edit').value = user.status.toLowerCase();
+        document.getElementById('no_hp_edit').value = user.no_hp || '';
+        document.getElementById('password_edit').value = ''; // Kosongkan password
 
+        // Update action URL for the form
+        document.getElementById('editForm').action = '/manajemen_akun/' + user.user_id; 
+        
+        openModal('modalEdit');
+    }
 
-            document.getElementById('user_id_edit').value = userId;
-            document.getElementById('nama_edit').value = userName;
-            document.getElementById('username_edit').value = userUsername;
-            document.getElementById('email_edit').value = userEmail;
-            document.getElementById('role_edit').value = userRole;
-            document.getElementById('status_edit').value = userStatus;
-            document.getElementById('no_hp_edit').value = userNoHp;
+    function deleteAccount(user) {
+        document.getElementById('deleteUsername').textContent = user.username;
+        // Update action URL for the form
+        document.getElementById('deleteForm').action = '/manajemen_akun/' + user.user_id; 
 
-            // Update action URL for the form
-            document.getElementById('editForm').action = '/manajemen_akun/' + userId; 
-            
-            openModal('modalEdit');
-        });
-
-        // Contoh fungsi untuk mengisi data modal delete sebelum dibuka
-        row.querySelector('.flex.justify-center button:nth-child(2)')?.addEventListener('click', function() {
-            const userId = 1; // Ganti dengan logika pengambilan ID
-            const userName = 'Contoh Admin'; // Ganti dengan logika pengambilan nama/username
-
-            document.getElementById('deleteUsername').textContent = userName;
-            // Update action URL for the form
-            document.getElementById('deleteForm').action = '/manajemen_akun/' + userId; 
-
-            openModal('modalDelete');
-        });
-    });
+        openModal('modalDelete');
+    }
 
 </script>
 @endsection

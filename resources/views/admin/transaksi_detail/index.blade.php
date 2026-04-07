@@ -27,9 +27,9 @@
 
         {{-- Tempat untuk tombol Aksi (misalnya: Export) --}}
         <div class="w-full md:w-auto flex justify-end">
-            <button class="group bg-indigo-600 text-white px-6 py-3 rounded-xl transition-all shadow-md hover:bg-indigo-700 hover:shadow-lg flex items-center font-semibold text-base w-full md:w-auto">
+            <a href="{{ route('transaksi_detail.export') }}" class="group bg-indigo-600 text-white px-6 py-3 rounded-xl transition-all shadow-md hover:bg-indigo-700 hover:shadow-lg flex items-center font-semibold text-base w-full md:w-auto">
                 <i class="ri-file-download-line mr-2 text-xl"></i> Export Laporan (CSV/Excel)
-            </button>
+            </a>
         </div>
     </div>
 

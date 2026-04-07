@@ -61,6 +61,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/produk/generate-barcode', [ProdukController::class, 'generateBarcode'])->name('produk.generateBarcode');
         // Pelanggan accessible to Admin, Owner, and Kasir
         Route::resource('pelanggan', PelangganController::class);
+        // Export Transaksi Detail (CSV)
+        Route::get('/transaksi_detail/export', [TransaksiDetailController::class, 'export'])->name('transaksi_detail.export');
         // Transaksi Detail accessible to Admin, Owner, and Kasir
         Route::resource('transaksi_detail', TransaksiDetailController::class);
         // Stok Log accessible to Admin, Owner, and Kasir

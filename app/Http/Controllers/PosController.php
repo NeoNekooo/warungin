@@ -7,6 +7,7 @@ use App\Models\Produk;
 use App\Models\Promo;
 use App\Models\Transaksi;
 use App\Models\Pembayaran;
+use App\Models\Pelanggan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -191,6 +192,14 @@ class PosController extends Controller
 
         // If cash, we already marked selesai: generate invoice file
         if ($transaksi->status === 'selesai') {
+            // Logic: Increment customer points (1 pt per 10k transaction)
+            if ($transaksi->pelanggan_id) {
+                $pointsToAdd = floor($transaksi->total / 10000);
+                if ($pointsToAdd > 0) {
+                    Pelanggan::where('id', $transaksi->pelanggan_id)->increment('poin', $pointsToAdd);
+                }
+            }
+
             // include product names for invoice
             $items = DB::table('transaksi_detail as td')
                 ->leftJoin('produk as p', 'td.produk_id', '=', 'p.produk_id')

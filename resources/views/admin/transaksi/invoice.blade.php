@@ -67,7 +67,7 @@
         <div class="text-xs text-gray-500">Simpan atau cetak bukti ini.</div>
         <div>
             <button id="print-button" onclick="window.print()" class="px-3 py-1 bg-gray-800 text-white rounded text-sm mr-2">Print</button>
-            <a href="{{ route('pos.index') }}" class="px-3 py-1 border rounded text-sm">Kembali</a>
+            <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="px-3 py-1 border rounded text-sm">Kembali</a>
         </div>
     </div>
 </div>
