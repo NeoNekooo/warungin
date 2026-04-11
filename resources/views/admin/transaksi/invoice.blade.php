@@ -1,177 +1,98 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Container Utama: MEWAH di Layar, RAMPING di Printer -->
-<div id="receipt-container" class="max-w-sm mx-auto bg-white p-6 shadow-xl rounded-xl border border-gray-100 mt-10 print:mt-0 print:shadow-none print:border-none print:p-0">
-    
-    <!-- Bagian Header: Mewah dengan Logo -->
-    <div class="flex items-center justify-between mb-6">
+<div class="max-w-sm mx-auto bg-white p-6 shadow print:p-0 print:shadow-none" style="font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;">
+    <div class="flex items-center justify-between mb-4">
         <div class="flex items-center space-x-3">
-            <div class="p-2 bg-blue-50 rounded-xl print:p-0">
-                <img src="{{ asset('image/warungin_logo.png') }}" class="w-12 h-12 rounded-lg shadow-sm print:shadow-none print:grayscale">
-            </div>
+            <img src="{{ asset('image/warungin_logo.png') }}" class="w-14 h-14 rounded-full shadow-sm">
             <div>
-                <div class="text-xl font-extrabold text-blue-900 tracking-tight uppercase print:text-black">WARUNGIN</div>
-                <div class="text-[10px] text-gray-500 font-medium uppercase tracking-widest print:text-black">Official Invoice</div>
+                <div class="text-lg font-bold">WARUNGIN</div>
+                <div class="text-xs text-gray-500">Invoice</div>
             </div>
         </div>
-        <div class="text-right">
-            <div class="text-[10px] text-gray-400 font-mono">{{ optional($transaksi->tanggal)->format('d M Y') }}</div>
-            <div class="text-[10px] text-gray-400 font-mono">{{ optional($transaksi->tanggal)->format('H:i:s') }}</div>
-        </div>
+        <div class="text-right text-xs text-gray-500">{{ optional($transaksi->tanggal)->format('d M Y H:i:s') }}</div>
     </div>
 
-    <!-- Divider Garis Modern -->
-    <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-6 print:bg-none print:border-b print:border-dashed print:border-black"></div>
-
-    <!-- Info Transaksi -->
-    <div class="grid grid-cols-2 gap-4 mb-6 text-xs">
-        <div>
-            <div class="text-gray-400 mb-1">ID Transaksi</div>
-            <div class="font-bold text-gray-800 print:text-black">#{{ $transaksi->transaksi_id }}</div>
-        </div>
-        <div class="text-right">
-            <div class="text-gray-400 mb-1">Kasir</div>
-            <div class="font-bold text-gray-800 print:text-black">{{ auth()->user()->nama ?? 'System' }}</div>
-        </div>
+    <div class="border-t pt-3">
+        <div class="flex justify-between text-sm py-1"><div class="text-gray-600">Kode Pembayaran</div><div class="font-medium">{{ $transaksi->midtrans_transaction_id ?? $transaksi->transaksi_id }}</div></div>
+        <div class="flex justify-between text-sm py-1"><div class="text-gray-600">Merchant</div><div class="font-medium">Warungin.com</div></div>
+        <div class="flex justify-between text-sm py-1"><div class="text-gray-600">Referensi</div><div class="font-medium">{{ $transaksi->midtrans_transaction_id ?? '-' }}</div></div>
     </div>
 
-    <!-- Item List -->
-    <div class="space-y-3 mb-6">
-        <div class="text-[10px] uppercase font-bold text-blue-600 tracking-widest mb-2 print:text-black print:mb-1">Rincian Belanja</div>
+    <div class="my-4 text-sm font-semibold">-- ITEM --</div>
+
+    <div class="text-sm">
         @if(isset($items) && $items->count())
             @foreach($items as $it)
-                <div class="flex justify-between items-start text-sm">
-                    <div class="flex-1 pr-4">
-                        <div class="font-bold text-gray-800 leading-tight print:text-black">{{ $it->nama_produk ?? 'Item' }}</div>
-                        <div class="text-[10px] text-gray-500 print:text-black">{{ $it->jumlah }} x Rp {{ number_format($it->harga_satuan, 0, ',', '.') }}</div>
-                    </div>
-                    <div class="font-bold text-gray-900 print:text-black">Rp {{ number_format($it->subtotal, 0, ',', '.') }}</div>
+                <div class="flex justify-between py-1 border-b border-dashed border-gray-100 pb-1">
+                    <div class="text-gray-700">{{ $it->nama_produk ?? ($it->produk_id ? 'Produk #'.$it->produk_id : 'Item') }}</div>
+                    <div class="text-gray-700">Rp {{ number_format($it->subtotal,0,',','.') }}</div>
                 </div>
             @endforeach
+        @else
+            <div class="flex justify-between py-1 border-b border-dashed border-gray-100 pb-1"><div>Contoh Produk A</div><div>Rp 12,000</div></div>
+            <div class="flex justify-between py-1 border-b border-dashed border-gray-100 pb-1"><div>Contoh Produk B</div><div>Rp 3,000</div></div>
+            <div class="flex justify-between py-1 border-b border-dashed border-gray-100 pb-1"><div>Contoh Produk C</div><div>Rp 20,000</div></div>
         @endif
     </div>
 
-    <!-- Divider Items -->
-    <div class="border-b border-dashed border-gray-200 mb-6 print:border-black"></div>
-
-    <!-- Ringkasan Pembayaran -->
-    <div class="space-y-2 mb-8">
+    <div class="mt-4">
         @php
             $appliedPromo = null;
+            // midtrans_raw may be array or json
             $raw = $transaksi->midtrans_raw ?? null;
             if(is_string($raw)){
                 try { $raw = json_decode($raw, true); } catch(\Throwable $e) { $raw = null; }
             }
-            $appliedId = (is_array($raw) && isset($raw['applied_promo_id'])) ? $raw['applied_promo_id'] : null;
+            $appliedId = null;
+            if(is_array($raw) && isset($raw['applied_promo_id'])) $appliedId = $raw['applied_promo_id'];
             if($appliedId){
                 try{ $appliedPromo = \App\Models\Promo::find($appliedId); } catch(\Throwable $e){ $appliedPromo = null; }
             }
         @endphp
 
         @if($appliedPromo)
-            <div class="flex justify-between text-xs">
-                <span class="text-gray-500">Promo: <span class="font-bold text-green-600 print:text-black">{{ $appliedPromo->name }}</span></span>
-                <span class="font-bold text-red-500">-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
-            </div>
-        @elseif($transaksi->diskon > 0)
-            <div class="flex justify-between text-xs">
-                <span class="text-gray-500">Total Diskon</span>
-                <span class="font-bold text-red-500">-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
-            </div>
+            <div class="flex justify-between py-1"><div class="text-gray-600">Promo</div><div class="font-medium">{{ $appliedPromo->name }} ({{ $appliedPromo->code ?? '-' }})</div></div>
         @endif
 
-        <div class="flex justify-between items-center py-2 bg-gray-50 rounded-lg px-3 print:bg-none print:px-0 print:border-t print:border-black">
-            <span class="text-sm font-bold text-gray-700 print:text-black uppercase">Grand Total</span>
-            <span class="text-xl font-black text-blue-700 print:text-black print:text-lg">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</span>
-        </div>
-
-        <div class="flex justify-between text-xs px-3 print:px-0">
-            <span class="text-gray-500 uppercase print:text-black">Bayar ({{ $transaksi->metode_bayar }})</span>
-            <span class="font-bold text-gray-800 print:text-black">Rp {{ number_format($transaksi->nominal_bayar ?? $transaksi->total, 0, ',', '.') }}</span>
-        </div>
-
-        @if($transaksi->kembalian > 0)
-            <div class="flex justify-between text-xs px-3 print:px-0">
-                <span class="text-gray-500 print:text-black">Uang Kembali</span>
-                <span class="font-bold text-blue-600 print:text-black">Rp {{ number_format($transaksi->kembalian, 0, ',', '.') }}</span>
-            </div>
-        @endif
+        <div class="flex justify-between py-1"><div class="text-gray-600">Diskon</div><div class="font-medium">Rp {{ $transaksi->diskon ? number_format($transaksi->diskon,0,',','.') : '0' }}</div></div>
+        <div class="flex justify-between py-1"><div class="text-gray-600">Bayar</div><div class="font-medium">Rp {{ number_format($transaksi->nominal_bayar ?? $transaksi->total,0,',','.') }}</div></div>
+        <div class="flex justify-between py-1 text-xl font-bold"><div>Total</div><div>Rp {{ number_format($transaksi->total,0,',','.') }}</div></div>
+        <div class="flex justify-between py-1"><div class="text-gray-600">Kembalian</div><div class="font-medium">Rp {{ number_format($transaksi->kembalian ?? 0,0,',','.') }}</div></div>
     </div>
 
-    <!-- Footer: Mewah & Professional -->
-    <div class="text-center">
-        <div class="inline-block px-4 py-1 bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-3 print:bg-none print:text-black print:border-black print:border print:rounded-none">-- Terima Kasih --</div>
-        <div class="text-[9px] text-gray-400 leading-relaxed italic print:text-black">Semoga hari anda menyenangkan! <br> Barang yang telah dibeli tidak dapat ditukar atau dikembalikan.</div>
-    </div>
+    <div class="text-center mt-6 text-sm font-semibold">-- TERIMA KASIH --</div>
 
-    <!-- Panel Tombol (HANYA LAYAR) -->
-    <div class="print:hidden mt-10 grid grid-cols-2 gap-3">
-        <button onclick="window.print()" class="flex items-center justify-center py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition transform hover:scale-[1.02]">
-            <i class="ri-printer-line mr-2"></i> Cetak Struk
-        </button>
-        <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="flex items-center justify-center py-3 bg-gray-100 text-gray-700 rounded-xl font-bold border border-gray-200 hover:bg-gray-200 transition">
-            Kembali
-        </a>
+    <div class="mt-4 flex items-center justify-between">
+        <div class="text-xs text-gray-500">Simpan atau cetak bukti ini.</div>
+        <div>
+            <button id="print-button" onclick="window.print()" class="px-3 py-1 bg-gray-800 text-white rounded text-sm mr-2">Print</button>
+            <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="px-3 py-1 border rounded text-sm">Kembali</a>
+        </div>
     </div>
 </div>
 
+<script>
+    // Auto-print when invoice is opened (small delay to allow rendering)
+    window.addEventListener('DOMContentLoaded', function(){
+        setTimeout(function(){
+            // trigger print and close window for popups (if opened via window.open)
+            try { window.print(); } catch(e) {}
+        }, 250);
+    });
+</script>
+
 <style>
-    /* DESAIN LAYAR TETAP MEWAH (Tailwind sudah handle) */
-
     @media print {
-        /* CSS KHUSUS PRINTER THERMAL 58MM - AMAN & RAPI */
-        
-        /* 1. Reset Global */
-        body { background: white !important; margin: 0 !important; padding: 0 !important; }
-        
-        /* 2. Sembunyikan elemen dashboard */
-        header, nav, aside, footer, .print\:hidden,
-        body > div:not([id="receipt-container"]),
-        .min-h-screen { 
-            display: none !important; 
-        }
-
-        /* 3. Paksa Container ke format Pita 58mm */
-        #receipt-container {
-            width: 58mm !important;
-            max-width: 58mm !important;
-            min-width: 58mm !important;
-            margin: 0 !important;
-            padding: 3mm !important;
-            display: block !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            border: none !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            visibility: visible !important;
-            font-family: 'Courier New', Courier, monospace !important; /* Font Monospace untuk Kasir */
-        }
-
-        /* 4. Pastikan semua anak elemen muncul */
-        #receipt-container * { 
-            visibility: visible !important; 
-            color: black !important; 
-            text-shadow: none !important;
-            box-shadow: none !important;
-        }
-
-        /* 5. Grayscale Logo agar tidak Hitam Blok */
-        img { filter: grayscale(1) !important; opacity: 0.8 !important; }
-
-        @page {
-            size: 58mm auto; /* Biarkan panjangnya mengikuti isi */
-            margin: 0;
-        }
+        /* Hide everything by default, then show the invoice container AND its children */
+        body * { visibility: hidden !important; }
+        .print\:p-0, .print\:shadow-none { visibility: visible !important; }
+        /* Ensure all descendant elements of the invoice container are visible in print */
+        .print\:p-0 *, .print\:shadow-none * { visibility: visible !important; }
+        .print\:p-0 { padding: 0 !important; }
+        .print\:shadow-none { box-shadow: none !important; }
+        .max-w-sm { width: 100% !important; margin: 0 auto; }
     }
 </style>
 
-<script>
-    // Trigger print otomatis jika diinginkan
-    window.onload = function() {
-        // window.print();
-    };
-</script>
 @endsection
