@@ -349,5 +349,6 @@
     }
 
     @if(session('success')) showToast("{{ session('success') }}"); @endif
+    @if(session('error')) showToast("{{ session('error') }}", "error"); @endif
 </script>
 @endsection

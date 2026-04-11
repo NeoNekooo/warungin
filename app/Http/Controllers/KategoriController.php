@@ -68,6 +68,12 @@ class KategoriController extends Controller
     public function destroy($id)
     {
         $kategori = Kategori::findOrFail($id);
+
+        // Safety Check: Cek apakah masih ada produk di kategori ini
+        if ($kategori->produk()->exists()) {
+            return redirect()->back()->with('error', 'Gagal menghapus! Masih ada produk yang menggunakan kategori ini. Silakan pindahkan produk ke kategori lain terlebih dahulu.');
+        }
+
         $kategori->delete();
         
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus');

@@ -21,18 +21,26 @@ class MidtransService
      */
     public function createSnapToken(array $transaction): string
     {
-        $params = [
-            'transaction_details' => [
-                'order_id' => $transaction['order_id'],
-                'gross_amount' => $transaction['gross_amount'],
-            ],
-        ];
+        try {
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $transaction['order_id'],
+                    'gross_amount' => $transaction['gross_amount'],
+                ],
+            ];
 
-        if (!empty($transaction['customer'])) {
-            $params['customer_details'] = $transaction['customer'];
+            if (!empty($transaction['customer'])) {
+                $params['customer_details'] = $transaction['customer'];
+            }
+
+            return Snap::getSnapToken($params);
+        } catch (\Exception $e) {
+            \Log::error('Midtrans Error: ' . $e->getMessage(), [
+                'order_id' => $transaction['order_id'] ?? 'unknown',
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new \Exception('Gagal membuat koneksi ke penyedia pembayaran: ' . $e->getMessage());
         }
-
-        return Snap::getSnapToken($params);
     }
 
     /**

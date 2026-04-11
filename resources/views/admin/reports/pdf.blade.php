@@ -85,7 +85,7 @@
 <body>
     <div class="header">
         <h1>Laporan Penjualan</h1>
-        <p>Warungin POS System - Manajemen Bisnis Tuan</p>
+        <p>Warungin POS System - Sistem Manajemen Bisnis</p>
     </div>
 
     <div class="info">
@@ -127,7 +127,7 @@
     </table>
 
     <div class="footer">
-        Dokumen ini dibuat otomatis oleh sistem Warungin. Terima kasih atas bisnis Tuan!
+        Dokumen ini dibuat otomatis oleh sistem Warungin. Terima kasih atas kepercayaan Anda.
     </div>
 </body>
 </html>

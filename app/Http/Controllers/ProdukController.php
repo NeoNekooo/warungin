@@ -7,6 +7,7 @@ use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\StokLog;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProdukController extends Controller
@@ -176,6 +177,18 @@ class ProdukController extends Controller
     {
         $produk = Produk::findOrFail($id);
         
+        // 1. Cek apakah ada riwayat di Stok Log (bisa pakai relasi)
+        if ($produk->stokLog()->exists()) {
+            return redirect()->back()->with('error', 'Gagal menghapus! Produk ini sudah memiliki riwayat Stok Log. Silakan ubah status menjadi Nonaktif sebagai gantinya.');
+        }
+
+        // 2. Cek apakah ada di Transaksi Detail (History Penjualan)
+        $hasTransaction = DB::table('transaksi_detail')->where('produk_id', $produk->produk_id)->exists();
+        if ($hasTransaction) {
+            return redirect()->back()->with('error', 'Gagal menghapus! Produk ini sudah pernah terjual dalam transaksi. Silakan ubah status menjadi Nonaktif untuk menjaga integritas laporan.');
+        }
+
+        // 3. Jika aman, baru hapus gambar dan datanya
         if ($produk->gambar_url && Storage::disk('public')->exists($produk->gambar_url)) {
             Storage::disk('public')->delete($produk->gambar_url);
         }

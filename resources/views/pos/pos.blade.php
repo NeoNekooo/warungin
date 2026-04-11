@@ -2,7 +2,7 @@
 
 @section('content')
 @php
-    $isProduction = config('services.midtrans.is_production');
+    $isProduction = filter_var(config('services.midtrans.is_production'), FILTER_VALIDATE_BOOLEAN);
     $clientKey = config('services.midtrans.client_key');
     $snapUrl = $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
 @endphp
@@ -602,14 +602,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedMethod === 'tunai') {
                 showToast('Pembayaran Tunai Berhasil!');
                 if(data.invoice_url) {
-                    console.log('Opening invoice for tunai:', data.invoice_url); // Added log
+                    console.log('Opening invoice for tunai:', data.invoice_url);
                     window.open(data.invoice_url, '_blank');
                 }
                 resetPos();
             } else {
                 // MIDTRANS HANDLING
+                console.log('Midtrans Snap Token Received:', data.snap_token);
+                
+                if (!data.snap_token) {
+                    throw new Error('Gagal mendapatkan kode pembayaran dari server. Silakan hubungi admin.');
+                }
+
                 if (typeof window.snap === 'undefined') {
-                    console.error('Midtrans Snap JS not loaded.'); // Added log
+                    console.error('Midtrans Snap JS not loaded.');
                     throw new Error('Midtrans Snap JS tidak terload. Periksa koneksi atau Client Key.');
                 }
                 
