@@ -579,6 +579,15 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         console.log('Payload sent to pos.pay:', payload); // Added log
 
+        // Validasi Minimal Nominal Midtrans (Biasanya Rp 1000)
+        if (selectedMethod !== 'tunai') {
+            let totalVal = parseInt(els.total.textContent.replace(/[^\d]/g, '')) || 0;
+            if (totalVal < 1000) {
+                showToast('Nominal Rp ' + totalVal + ' terlalu kecil untuk Non-Tunai (Min Rp 1.000).', 'error');
+                return;
+            }
+        }
+
         originalText = els.btnBayar.innerHTML;
         els.btnBayar.disabled = true;
         els.btnBayar.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;

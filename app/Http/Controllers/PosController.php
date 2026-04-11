@@ -214,12 +214,22 @@ class PosController extends Controller
         }
 
         // For Midtrans (qris/transfer) create snap token via MidtransService and return it
-        $snapToken = $this->midtrans->createSnapToken([
-            'order_id' => $orderId,
-            'gross_amount' => (float) $transaksi->total,
-            'customer' => [],
-        ]);
-
-        return response()->json(['success' => true, 'transaksi_id' => $transaksi->transaksi_id, 'snap_token' => $snapToken]);
+        try {
+            $snapToken = $this->midtrans->createSnapToken([
+                'order_id' => $orderId,
+                'gross_amount' => (float) $transaksi->total,
+                'customer' => [
+                    'first_name' => 'Pelanggan',
+                    'email' => 'pelanggan@warungin.com', // Contoh data minimal
+                ],
+            ]);
+            return response()->json(['success' => true, 'transaksi_id' => $transaksi->transaksi_id, 'snap_token' => $snapToken]);
+        } catch (\Exception $e) {
+            \Log::error('POS Checkout Error (Midtrans): ' . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Gagal terhubung ke Midtrans: ' . $e->getMessage()
+            ], 400);
+        }
     }
 }
