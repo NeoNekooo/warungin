@@ -3,12 +3,9 @@
 @section('title', 'Manajemen Promo')
 
 @section('content')
-<div class="space-y-8 relative"> {{-- Perluas spacing --}}
+<div class="space-y-8 relative">
 
-    {{-- Notifikasi Toast --}}
     <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2"></div>
-
-    {{-- Header Dashboard/Judul Halaman (WARNA YELLOW TETAP) --}}
     <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         
         <div class="space-y-1">
@@ -35,12 +32,9 @@
     
     <div class="flex flex-col gap-6">
 
-        {{-- Konten Utama: Daftar Promo (Menggunakan format Card Grid yang lebih cocok untuk promo) --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @forelse($promos as $promo)
             <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-shadow duration-300">
-                
-                {{-- Card Header --}}
                 <div class="p-5 border-b border-gray-100 bg-yellow-50/50">
                     <div class="flex justify-between items-start">
                         <div>

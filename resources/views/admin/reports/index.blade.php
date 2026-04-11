@@ -6,10 +6,8 @@
 <div class="p-6 bg-gray-50 min-h-screen">
     <h2 class="text-3xl font-extrabold text-gray-800 mb-6 border-b pb-2">Ringkasan Laporan Penjualan</h2>
 
-    {{-- 1. Kartu Ringkasan (Summary Cards) --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         
-        {{-- Total Transaksi --}}
         <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500">
             <div class="text-sm font-semibold text-gray-500 flex items-center gap-2">
                 <i class="ri-file-list-3-line text-lg text-indigo-400"></i>
@@ -21,7 +19,6 @@
             <p class="text-xs text-gray-400 mt-1">Transaksi yang difilter</p>
         </div>
 
-        {{-- Total Pendapatan --}}
         <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
             <div class="text-sm font-semibold text-gray-500 flex items-center gap-2">
                 <i class="ri-money-dollar-circle-line text-lg text-green-400"></i>
@@ -33,7 +30,6 @@
             <p class="text-xs text-gray-400 mt-1">Pendapatan kotor</p>
         </div>
 
-        {{-- Area Filter dan Export --}}
         <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-100 flex flex-col justify-between">
             <h4 class="text-base font-bold text-gray-700 mb-4 flex items-center gap-2">
                 <i class="ri-settings-4-line"></i> Opsi Laporan

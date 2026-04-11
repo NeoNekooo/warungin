@@ -6,7 +6,6 @@
 <div class="flex-1 p-6 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto space-y-8">
 
-        <!-- Welcome card -->
         <div class="relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-lg p-8 text-white">
             <div class="absolute top-0 right-0 w-48 h-48 bg-white opacity-10 rounded-full -mr-12 -mt-12 blur-3xl pointer-events-none"></div>
             <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -25,7 +24,6 @@
             </div>
         </div>
 
-        <!-- Summary cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white p-4 rounded-xl shadow-sm">
                 <div class="flex items-center text-sm text-gray-500">

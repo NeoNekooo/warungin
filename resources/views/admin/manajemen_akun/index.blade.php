@@ -5,16 +5,7 @@
 @section('content')
 <div class="space-y-8 relative min-h-screen">
 
-    {{-- Notifikasi Toast --}}
-    {{-- Tempat untuk menampung pesan sukses/gagal --}}
-    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2">
-        {{-- Contoh notifikasi sukses: --}}
-        {{-- @if(session('success'))
-            <div class="bg-green-500 text-white p-4 rounded-lg shadow-xl">
-                {{ session('success') }}
-            </div>
-        @endif --}}
-    </div>
+    {{-- Notifikasi Toast diaktifkan via JS di bawah --}}
 
     {{-- Header Dashboard/Judul Halaman (Warna Biru) --}}
     <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
@@ -326,5 +317,21 @@
         openModal('modalDelete');
     }
 
+    // Notifikasi dari Session Laravel
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            showToast("{{ session('success') }}", 'success');
+        @endif
+
+        @if(session('error'))
+            showToast("{{ session('error') }}", 'error');
+        @endif
+
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                showToast("{{ $error }}", 'error');
+            @endforeach
+        @endif
+    });
 </script>
 @endsection

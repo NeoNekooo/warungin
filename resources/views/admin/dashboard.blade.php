@@ -6,7 +6,6 @@
     <div class="flex-1 p-6 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto space-y-8">
 
-            {{-- 1. Kartu Sambutan --}}
             <div
                 class="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-blue-700 rounded-2xl shadow-xl p-8 text-white">
                 <div
@@ -29,9 +28,7 @@
                 </div>
             </div>
 
-            {{-- 2. Grid Key Metrics --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {{-- Total Pendapatan --}}
                 <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                     <div class="flex items-start justify-between">
                         <div>
@@ -43,7 +40,6 @@
                                 class="ri-money-dollar-circle-line text-2xl"></i></div>
                     </div>
                 </div>
-                {{-- Total Transaksi --}}
                 <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                     <div class="flex items-start justify-between">
                         <div>
@@ -54,7 +50,6 @@
                         <div class="bg-blue-50 text-blue-600 p-3 rounded-xl"><i class="ri-bill-line text-2xl"></i></div>
                     </div>
                 </div>
-                {{-- Total Pengguna --}}
                 <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                     <div class="flex items-start justify-between">
                         <div>
@@ -65,7 +60,6 @@
                         <div class="bg-green-50 text-green-600 p-3 rounded-xl"><i class="ri-group-line text-2xl"></i></div>
                     </div>
                 </div>
-                {{-- Total Produk --}}
                 <div class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                     <div class="flex items-start justify-between">
                         <div>
@@ -79,10 +73,8 @@
                 </div>
             </div>
 
-            {{-- 3. Area Grafik & Produk Terlaris --}}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {{-- Diagram Penjualan --}}
                 <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-gray-100">
                     <div class="flex justify-between items-center mb-6 border-b pb-3">
                         <h3 class="font-extrabold text-gray-800 text-lg flex items-center">
