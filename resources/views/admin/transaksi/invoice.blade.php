@@ -84,15 +84,19 @@
 
 <style>
     @media print {
-        /* 1. Sembunyikan SEMUA elemen dashboard/layout agar tidak looping/infinite feed */
-        body { background: white !important; margin: 0 !important; padding: 0 !important; }
-        header, nav, aside, footer, .print\:hidden,
-        body > div:not(.max-w-sm) { 
-            display: none !important; 
+        /* 1. Sembunyikan SEMUA isi halaman secara visual tanpa menghapus kotaknya */
+        body * { visibility: hidden !important; }
+        
+        /* 2. Tampilkan KEMBALI struk belanja Tuan */
+        .max-w-sm, .max-w-sm * { 
+            visibility: visible !important; 
         }
 
-        /* 2. Optimasi Container Struk (Original Look tapi Ramping) */
+        /* 3. Paksa struk ke pojok kiri atas biar gak ada space kosong (Anti Infinite Feed) */
         .max-w-sm { 
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
             width: 58mm !important; 
             max-width: 58mm !important; 
             min-width: 58mm !important;
@@ -100,36 +104,19 @@
             padding: 2mm !important;
             box-shadow: none !important;
             border: none !important;
-            display: block !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            visibility: visible !important;
             background: white !important;
-            font-family: 'Courier New', Courier, monospace !important; /* Paksa Monospaced saat print */
+            font-family: 'Courier New', Courier, monospace !important; 
         }
 
-        /* 3. Pastikan semua teks & garis di dalam struk terlihat jelas */
+        /* 4. Pastikan teks hitam tajam & garis tidak aneh */
         .max-w-sm * { 
-            visibility: visible !important; 
             color: black !important;
             box-shadow: none !important;
             text-shadow: none !important;
         }
 
-        /* 4. Sederhanakan divider agar tidak 'Item' */
-        .border-t, .border-b, .border-dashed {
-            border-color: black !important;
-            opacity: 1 !important;
-        }
-
-        /* 5. Grayscale Logo (Jika ada) agar tidak jadi blok hitam */
+        /* 5. Grayscale Logo biar gak jadi blok hitam pekat */
         img { filter: grayscale(1) !important; opacity: 0.7 !important; }
-
-        /* 6. Hilangkan tombol saat print */
-        #print-button, a[href*="pos"], a[href*="transaksi"] { 
-            display: none !important; 
-        }
 
         @page {
             size: 58mm auto;
