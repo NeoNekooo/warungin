@@ -123,8 +123,8 @@ class PosController extends Controller
             'total' => $totalAfter,
             'diskon' => $discountAmount,
             'pajak' => 0,
-            'metode_bayar' => $data['metode_bayar'],
-            // store the nominal_bayar supplied by UI (for tunai) or 0 otherwise
+            // Map non-tunai to qris as it is supported by the DB enum
+            'metode_bayar' => ($data['metode_bayar'] === 'non-tunai' ? 'qris' : $data['metode_bayar']),
             'nominal_bayar' => ($data['metode_bayar'] === 'tunai') ? ($nominalBayar ?? $totalAfter) : 0,
             'kembalian' => ($data['metode_bayar'] === 'tunai') ? $kembalian : 0,
             'status' => ($data['metode_bayar'] === 'tunai') ? 'selesai' : 'pending',
