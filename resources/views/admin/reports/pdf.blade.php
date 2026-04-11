@@ -1,31 +1,133 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Penjualan - Warungin</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #4f46e5;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #4f46e5;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #666;
+            font-size: 12px;
+        }
+        .info {
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th {
+            background-color: #4f46e5;
+            color: white;
+            text-align: left;
+            padding: 10px;
+            font-size: 13px;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+        }
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .summary {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .summary-box {
+            display: inline-block;
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 200px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Laporan Penjualan</h1>
+        <p>Warungin POS System - Manajemen Bisnis Tuan</p>
+    </div>
 
-@section('content')
-<div class="p-6 max-w-4xl mx-auto bg-white print:p-0 print:shadow-none" style="font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;">
-    <h1 class="text-2xl font-bold mb-4">Laporan Harian</h1>
+    <div class="info">
+        <strong>Dicetak pada:</strong> {{ date('d F Y, H:i') }}<br>
+        <strong>Dicetak oleh:</strong> {{ auth()->user()->nama }} ({{ ucfirst(auth()->user()->role) }})
+    </div>
 
-    <table class="w-full text-sm border-collapse">
+    <table>
         <thead>
             <tr>
-                <th class="text-left border-b py-2">Tanggal</th>
-                <th class="text-right border-b py-2">Jumlah Transaksi</th>
-                <th class="text-right border-b py-2">Total (Rp)</th>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th class="text-right">Jumlah Transaksi</th>
+                <th class="text-right">Total Pendapatan (Rp)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($rows as $row)
+            @php $totalSemua = 0; $totalCount = 0; @endphp
+            @foreach($rows as $index => $row)
+            @php 
+                $totalSemua += $row->total; 
+                $totalCount += $row->count;
+            @endphp
             <tr>
-                <td class="py-2">{{ $row->tanggal }}</td>
-                <td class="py-2 text-right">{{ $row->count }}</td>
-                <td class="py-2 text-right">{{ number_format($row->total,0,',','.') }}</td>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ date('d M Y', strtotime($row->tanggal)) }}</td>
+                <td class="text-right">{{ number_format($row->count, 0, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($row->total, 0, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr style="font-weight: bold; background-color: #f3f4f1;">
+                <td colspan="2" style="border-top: 2px solid #4f46e5;">TOTAL KESELURUHAN</td>
+                <td class="text-right" style="border-top: 2px solid #4f46e5;">{{ number_format($totalCount, 0, ',', '.') }}</td>
+                <td class="text-right" style="border-top: 2px solid #4f46e5;">Rp {{ number_format($totalSemua, 0, ',', '.') }}</td>
+            </tr>
+        </tfoot>
     </table>
 
-    <div class="mt-6">
-        <a href="{{ route('reports.pdf') }}" class="px-4 py-2 bg-blue-600 text-white rounded">Download PDF</a>
-        <button onclick="window.print()" class="px-4 py-2 bg-gray-800 text-white rounded ml-2">Print</button>
+    <div class="footer">
+        Dokumen ini dibuat otomatis oleh sistem Warungin. Terima kasih atas bisnis Tuan!
     </div>
-</div>
-@endsection
+</body>
+</html>
