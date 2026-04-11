@@ -115,7 +115,13 @@
             text-shadow: none !important;
         }
 
-        /* 5. Grayscale Logo biar gak jadi blok hitam pekat */
+        /* 5. Sembunyikan Tombol & Pesan Bawah saat cetak */
+        .mt-4, #print-button, a { 
+            display: none !important; 
+            visibility: hidden !important;
+        }
+
+        /* 6. Grayscale Logo biar gak jadi blok hitam pekat */
         img { filter: grayscale(1) !important; opacity: 0.7 !important; }
 
         @page {
