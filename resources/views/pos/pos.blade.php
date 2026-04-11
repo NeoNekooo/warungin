@@ -217,40 +217,32 @@
                     <svg class="w-5 h-5 group-hover:translate-x-1 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </button>
             </div>
-        </div>
-    </aside>
-</div>
-
-<div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 hidden opacity-0 transition-all duration-300 pointer-events-none">
-    <div id="toast-body" class="bg-gray-900/95 backdrop-blur-sm text-white px-6 py-2 rounded-full shadow-xl ring-2 ring-white/20 flex items-center gap-2">
-        <span id="toast-icon"></span>
-        <span id="toast-msg" class="font-semibold text-sm"></span>
-    </div>
-</div>
-
+@push('scripts')
 <script src="{{ $snapUrl }}" data-client-key="{{ $clientKey }}"></script>
-
 <script>
+console.log('POS Script Loading...'); // Diagnostik Utama
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('POS DOM Content Loaded, initializing systems...');
     
-       // === INPUT BAYAR & KEMBALIAN ===
+    // === INPUT BAYAR & KEMBALIAN ===
     const bayarInput = document.getElementById('bayar');
     const kembalianInput = document.getElementById('kembalian');
-    const totalElm = document.getElementById('total'); // ambil elemen total
+    const totalElm = document.getElementById('total');
 
-    bayarInput.addEventListener('input', function () {
-        // Ambil total langsung dari UI (contoh: "Rp 10.000")
-        let totalText = totalElm.textContent.replace(/[^\d]/g, '');
-        let total = parseInt(totalText) || 0;
+    if (bayarInput) {
+        bayarInput.addEventListener('input', function () {
+            let totalText = totalElm.textContent.replace(/[^\d]/g, '');
+            let total = parseInt(totalText) || 0;
+            let bayar = parseInt(this.value) || 0;
+            let kembalian = bayar - total;
 
-        let bayar = parseInt(this.value) || 0;
-        let kembalian = bayar - total;
+            kembalianInput.value = kembalian >= 0 
+                ? "Rp " + kembalian.toLocaleString('id-ID')
+                : "Belum cukup";
+        });
+    }
 
-        kembalianInput.value = kembalian >= 0 
-            ? "Rp " + kembalian.toLocaleString('id-ID')
-            : "Belum cukup";
-    });
     // --- STATE ---
     const state = {
         products: [],
@@ -272,9 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBayar: document.getElementById('btn-bayar'),
         searchInput: document.getElementById('search'),
         searchClear: document.getElementById('search-clear'),
-        toast: document.getElementById('toast'),
-        toastBody: document.getElementById('toast-body'),
-        toastMsg: document.getElementById('toast-msg'),
         promoBadge: document.getElementById('promo-badge'),
         appliedPromoName: document.getElementById('applied-promo-name'),
         payRadios: document.getElementsByName('pay_method'),
@@ -284,20 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- HELPERS ---
     const formatRp = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
     
-    const showToast = (message, type = 'success') => {
-        if(!els.toast) return;
-        els.toastMsg.textContent = message;
-        if(type === 'success') {
-            els.toastBody.className = 'bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-green-500';
-            els.toastBody.innerHTML = `<svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> ${message}`;
-        } else {
-            els.toastBody.className = 'bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-red-500';
-            els.toastBody.innerHTML = `<svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> ${message}`;
-        }
-        els.toast.classList.remove('hidden');
-        // Auto hide
-        setTimeout(() => els.toast.classList.add('hidden'), 3000);
-    };
 
     // --- Nominal Bayar Visibility Toggle ---
     function toggleNominalBayarVisibility() {
@@ -690,4 +665,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
 });
 </script>
+@endpush
 @endsection
