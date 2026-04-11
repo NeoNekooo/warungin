@@ -122,9 +122,8 @@ class PosController extends Controller
             'pelanggan_id' => $data['pelanggan_id'] ?? null,
             'total' => $totalAfter,
             'diskon' => $discountAmount,
-            'pajak' => 0,
-            // Map non-tunai to qris as it is supported by the DB enum
-            'metode_bayar' => ($data['metode_bayar'] === 'non-tunai' ? 'qris' : $data['metode_bayar']),
+            // Simpan langsung 'non-tunai' karena migrasi sudah disiapkan untuk Tuan
+            'metode_bayar' => $data['metode_bayar'],
             'nominal_bayar' => ($data['metode_bayar'] === 'tunai') ? ($nominalBayar ?? $totalAfter) : 0,
             'kembalian' => ($data['metode_bayar'] === 'tunai') ? $kembalian : 0,
             'status' => ($data['metode_bayar'] === 'tunai') ? 'selesai' : 'pending',
