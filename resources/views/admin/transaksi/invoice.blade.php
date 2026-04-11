@@ -1,50 +1,149 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struk Pembayaran #{{ $transaksi->transaksi_id }}</title>
+    <style>
+        /* CSS KHUSUS PRINTER THERMAL 58MM */
+        @page {
+            size: 58mm auto;
+            margin: 0;
+        }
 
-@section('content')
-<div id="receipt-container" class="max-w-sm mx-auto bg-white p-4 shadow print:shadow-none print:p-0" style="font-family: 'Courier New', Courier, monospace;">
-    <!-- Bagian Header: Nama Toko & Logo -->
-    <div class="text-center mb-4">
-        <img src="{{ asset('image/warungin_logo.png') }}" class="w-16 h-16 rounded-full mx-auto mb-2 shadow-sm border border-gray-100">
-        <div class="text-xl font-bold uppercase tracking-tighter text-blue-800">WARUNGIN</div>
-        <div class="text-[10px] text-gray-500 italic">Eceran & Grosir Modern</div>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            width: 58mm;
+            margin: 0;
+            padding: 5px;
+            font-size: 11px;
+            color: black;
+            background-color: white;
+            line-height: 1.2;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-bold { font-weight: bold; }
+        
+        .header {
+            margin-bottom: 10px;
+        }
+
+        .store-name {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .divider {
+            border-top: 1px dashed black;
+            margin: 5px 0;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .items {
+            margin: 10px 0;
+        }
+
+        .item-row {
+            margin-bottom: 5px;
+        }
+
+        .totals {
+            margin-top: 10px;
+        }
+
+        .total-row {
+            margin-bottom: 2px;
+        }
+
+        .grand-total {
+            font-size: 14px;
+            border-top: 1px dashed black;
+            padding-top: 5px;
+            margin-top: 5px;
+        }
+
+        .footer {
+            margin-top: 15px;
+            font-size: 10px;
+        }
+
+        /* Navigasi layar saja */
+        .no-print {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-print { background: #000; color: #fff; border: none; }
+        .btn-back { background: #eee; color: #333; border: 1px solid #ccc; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header text-center">
+        <div class="store-name">WARUNGIN</div>
+        <div>Eceran & Grosir Modern</div>
     </div>
 
-    <!-- Garis Pemisah Klasik -->
-    <div class="border-b border-dashed border-gray-400 mb-3"></div>
+    <div class="divider"></div>
 
-    <!-- Info Transaksi -->
-    <div class="text-[11px] mb-3 leading-tight">
-        <div class="flex justify-between">
+    <div class="info">
+        <div class="flex">
             <span>No: {{ $transaksi->transaksi_id }}</span>
             <span>{{ optional($transaksi->tanggal)->format('d/m/y H:i') }}</span>
         </div>
-        <div class="flex justify-between">
+        <div class="flex">
             <span>Kasir: {{ auth()->user()->nama ?? 'System' }}</span>
-            <span>Ref: {{ $transaksi->midtrans_transaction_id ? substr($transaksi->midtrans_transaction_id, 0, 8) : '-' }}</span>
         </div>
     </div>
 
-    <div class="border-b border-dashed border-gray-400 mb-3"></div>
+    <div class="divider"></div>
 
-    <!-- Item List -->
-    <div class="text-[12px] space-y-2">
+    <div class="items">
         @if(isset($items) && $items->count())
             @foreach($items as $it)
-                <div>
-                    <div class="font-medium text-gray-800 leading-tight">{{ $it->nama_produk ?? 'Item' }}</div>
-                    <div class="flex justify-between text-[11px] text-gray-600">
-                        <span>{{ $it->jumlah }} x Rp {{ number_format($it->harga_satuan, 0, ',', '.') }}</span>
-                        <span>Rp {{ number_format($it->subtotal, 0, ',', '.') }}</span>
+                <div class="item-row">
+                    <div class="font-bold">{{ $it->nama_produk ?? 'Item' }}</div>
+                    <div class="flex">
+                        <span>{{ $it->jumlah }} x {{ number_format($it->harga_satuan, 0, ',', '.') }}</span>
+                        <span>{{ number_format($it->subtotal, 0, ',', '.') }}</span>
                     </div>
                 </div>
             @endforeach
         @endif
     </div>
 
-    <div class="border-b border-dashed border-gray-400 my-3"></div>
+    <div class="divider"></div>
 
-    <!-- Perhitungan Total -->
-    <div class="text-[12px] space-y-1">
+    <div class="totals">
         @php
             $appliedPromo = null;
             $raw = $transaksi->midtrans_raw ?? null;
@@ -58,109 +157,55 @@
         @endphp
 
         @if($appliedPromo)
-            <div class="flex justify-between">
+            <div class="total-row flex">
                 <span>Promo ({{ $appliedPromo->code }})</span>
                 <span>-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
             </div>
         @elseif($transaksi->diskon > 0)
-            <div class="flex justify-between">
-                <span>Potongan / Diskon</span>
+            <div class="total-row flex">
+                <span>Diskon</span>
                 <span>-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
             </div>
         @endif
 
-        <div class="flex justify-between font-bold text-lg pt-1 border-t border-gray-100">
+        <div class="total-row flex grand-total font-bold">
             <span>TOTAL</span>
             <span>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</span>
         </div>
         
-        <div class="flex justify-between text-[11px] pt-1">
-            <span class="uppercase">Bayar ({{ $transaksi->metode_bayar }})</span>
-            <span>Rp {{ number_format($transaksi->nominal_bayar ?? $transaksi->total, 0, ',', '.') }}</span>
+        <div class="total-row flex">
+            <span>Bayar ({{ $transaksi->metode_bayar }})</span>
+            <span>{{ number_format($transaksi->nominal_bayar ?? $transaksi->total, 0, ',', '.') }}</span>
         </div>
         
         @if($transaksi->kembalian > 0)
-            <div class="flex justify-between text-[11px]">
-                <span>Kembalian</span>
-                <span>Rp {{ number_format($transaksi->kembalian, 0, ',', '.') }}</span>
+            <div class="total-row flex">
+                <span>Kembali</span>
+                <span>{{ number_format($transaksi->kembalian, 0, ',', '.') }}</span>
             </div>
         @endif
     </div>
 
-    <div class="border-b border-dashed border-gray-400 my-4"></div>
+    <div class="divider"></div>
 
-    <!-- Footer -->
-    <div class="text-center space-y-1 mb-8">
-        <div class="text-[11px] font-bold uppercase tracking-widest">-- Terima Kasih --</div>
-        <div class="text-[9px] text-gray-500">Barang yang sudah dibeli <br> tidak dapat ditukar/dikembalikan</div>
+    <div class="footer text-center">
+        <div class="font-bold uppercase">-- Terima Kasih --</div>
+        <div>Barang yang sudah dibeli <br> tidak dapat ditukar</div>
     </div>
 
-    <!-- Tombol Aksi (Hidden on Print) -->
-    <div class="print:hidden mt-6 flex gap-2 justify-center">
-        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm shadow-md hover:bg-blue-700 transition">
-            <i class="ri-printer-line mr-1"></i> Cetak Struk
-        </button>
-        <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm border hover:bg-gray-200 transition">
-            Kembali
-        </a>
+    <!-- Interface Non-Cetak -->
+    <div class="no-print">
+        <button onclick="window.print()" class="btn btn-print">Cetak Struk</button>
+        <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="btn btn-back">Kembali</a>
     </div>
-</div>
 
-<style>
-    @media print {
-        /* Reset Background & Container */
-        body { background: white !important; padding: 0 !important; margin: 0 !important; }
-        
-        /* Pastikan hanya receipt-container yang muncul */
-        body > div:not(#receipt-container), 
-        header, 
-        nav, 
-        aside, 
-        footer:not(#receipt-container footer) {
-            display: none !important;
-        }
-
-        #receipt-container {
-            width: 58mm !important;
-            max-width: 58mm !important;
-            margin: 0 !important;
-            padding: 5mm !important; /* Margin kecil di dalam kertas */
-            box-shadow: none !important;
-            visibility: visible !important;
-            display: block !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        /* Tampilkan semua anak dari container */
-        #receipt-container * {
-            visibility: visible !important;
-        }
-
-        /* Sembunyikan tombol */
-        .print\:hidden { display: none !important; }
-
-        @page {
-            size: 58mm auto;
-            margin: 0;
-        }
-    }
-
-    /* Styling for screen (Preview) */
-    #receipt-container {
-        border: 1px solid #eee;
-        border-radius: 8px;
-    }
-</style>
-
-<script>
-    // Auto trigger print window
-    window.onload = function() {
-        setTimeout(() => {
-            // Uncomment line below if you want auto-print dialog
-            // window.print();
-        }, 500);
-    };
-</script>
-@endsection
+    <script>
+        // Auto print delay
+        window.onload = function() {
+            setTimeout(() => {
+                // window.print();
+            }, 500);
+        };
+    </script>
+</body>
+</html>
