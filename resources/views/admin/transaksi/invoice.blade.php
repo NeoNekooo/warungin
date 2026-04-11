@@ -1,149 +1,62 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Struk Pembayaran #{{ $transaksi->transaksi_id }}</title>
-    <style>
-        /* CSS KHUSUS PRINTER THERMAL 58MM */
-        @page {
-            size: 58mm auto;
-            margin: 0;
-        }
+@extends('layouts.app')
 
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            width: 58mm;
-            margin: 0;
-            padding: 5px;
-            font-size: 11px;
-            color: black;
-            background-color: white;
-            line-height: 1.2;
-        }
-
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-bold { font-weight: bold; }
-        
-        .header {
-            margin-bottom: 10px;
-        }
-
-        .store-name {
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .divider {
-            border-top: 1px dashed black;
-            margin: 5px 0;
-        }
-
-        .flex {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .items {
-            margin: 10px 0;
-        }
-
-        .item-row {
-            margin-bottom: 5px;
-        }
-
-        .totals {
-            margin-top: 10px;
-        }
-
-        .total-row {
-            margin-bottom: 2px;
-        }
-
-        .grand-total {
-            font-size: 14px;
-            border-top: 1px dashed black;
-            padding-top: 5px;
-            margin-top: 5px;
-        }
-
-        .footer {
-            margin-top: 15px;
-            font-size: 10px;
-        }
-
-        /* Navigasi layar saja */
-        .no-print {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(255,255,255,0.9);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .btn {
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-family: sans-serif;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .btn-print { background: #000; color: #fff; border: none; }
-        .btn-back { background: #eee; color: #333; border: 1px solid #ccc; }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { padding: 0; margin: 0; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header text-center">
-        <div class="store-name">WARUNGIN</div>
-        <div>Eceran & Grosir Modern</div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="info">
-        <div class="flex">
-            <span>No: {{ $transaksi->transaksi_id }}</span>
-            <span>{{ optional($transaksi->tanggal)->format('d/m/y H:i') }}</span>
+@section('content')
+<!-- Container Utama: MEWAH di Layar, RAMPING di Printer -->
+<div id="receipt-container" class="max-w-sm mx-auto bg-white p-6 shadow-xl rounded-xl border border-gray-100 mt-10 print:mt-0 print:shadow-none print:border-none print:p-0">
+    
+    <!-- Bagian Header: Mewah dengan Logo -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-blue-50 rounded-xl print:p-0">
+                <img src="{{ asset('image/warungin_logo.png') }}" class="w-12 h-12 rounded-lg shadow-sm print:shadow-none print:grayscale">
+            </div>
+            <div>
+                <div class="text-xl font-extrabold text-blue-900 tracking-tight uppercase print:text-black">WARUNGIN</div>
+                <div class="text-[10px] text-gray-500 font-medium uppercase tracking-widest print:text-black">Official Invoice</div>
+            </div>
         </div>
-        <div class="flex">
-            <span>Kasir: {{ auth()->user()->nama ?? 'System' }}</span>
+        <div class="text-right">
+            <div class="text-[10px] text-gray-400 font-mono">{{ optional($transaksi->tanggal)->format('d M Y') }}</div>
+            <div class="text-[10px] text-gray-400 font-mono">{{ optional($transaksi->tanggal)->format('H:i:s') }}</div>
         </div>
     </div>
 
-    <div class="divider"></div>
+    <!-- Divider Garis Modern -->
+    <div class="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-6 print:bg-none print:border-b print:border-dashed print:border-black"></div>
 
-    <div class="items">
+    <!-- Info Transaksi -->
+    <div class="grid grid-cols-2 gap-4 mb-6 text-xs">
+        <div>
+            <div class="text-gray-400 mb-1">ID Transaksi</div>
+            <div class="font-bold text-gray-800 print:text-black">#{{ $transaksi->transaksi_id }}</div>
+        </div>
+        <div class="text-right">
+            <div class="text-gray-400 mb-1">Kasir</div>
+            <div class="font-bold text-gray-800 print:text-black">{{ auth()->user()->nama ?? 'System' }}</div>
+        </div>
+    </div>
+
+    <!-- Item List -->
+    <div class="space-y-3 mb-6">
+        <div class="text-[10px] uppercase font-bold text-blue-600 tracking-widest mb-2 print:text-black print:mb-1">Rincian Belanja</div>
         @if(isset($items) && $items->count())
             @foreach($items as $it)
-                <div class="item-row">
-                    <div class="font-bold">{{ $it->nama_produk ?? 'Item' }}</div>
-                    <div class="flex">
-                        <span>{{ $it->jumlah }} x {{ number_format($it->harga_satuan, 0, ',', '.') }}</span>
-                        <span>{{ number_format($it->subtotal, 0, ',', '.') }}</span>
+                <div class="flex justify-between items-start text-sm">
+                    <div class="flex-1 pr-4">
+                        <div class="font-bold text-gray-800 leading-tight print:text-black">{{ $it->nama_produk ?? 'Item' }}</div>
+                        <div class="text-[10px] text-gray-500 print:text-black">{{ $it->jumlah }} x Rp {{ number_format($it->harga_satuan, 0, ',', '.') }}</div>
                     </div>
+                    <div class="font-bold text-gray-900 print:text-black">Rp {{ number_format($it->subtotal, 0, ',', '.') }}</div>
                 </div>
             @endforeach
         @endif
     </div>
 
-    <div class="divider"></div>
+    <!-- Divider Items -->
+    <div class="border-b border-dashed border-gray-200 mb-6 print:border-black"></div>
 
-    <div class="totals">
+    <!-- Ringkasan Pembayaran -->
+    <div class="space-y-2 mb-8">
         @php
             $appliedPromo = null;
             $raw = $transaksi->midtrans_raw ?? null;
@@ -157,55 +70,108 @@
         @endphp
 
         @if($appliedPromo)
-            <div class="total-row flex">
-                <span>Promo ({{ $appliedPromo->code }})</span>
-                <span>-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
+            <div class="flex justify-between text-xs">
+                <span class="text-gray-500">Promo: <span class="font-bold text-green-600 print:text-black">{{ $appliedPromo->name }}</span></span>
+                <span class="font-bold text-red-500">-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
             </div>
         @elseif($transaksi->diskon > 0)
-            <div class="total-row flex">
-                <span>Diskon</span>
-                <span>-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
+            <div class="flex justify-between text-xs">
+                <span class="text-gray-500">Total Diskon</span>
+                <span class="font-bold text-red-500">-{{ number_format($transaksi->diskon, 0, ',', '.') }}</span>
             </div>
         @endif
 
-        <div class="total-row flex grand-total font-bold">
-            <span>TOTAL</span>
-            <span>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</span>
+        <div class="flex justify-between items-center py-2 bg-gray-50 rounded-lg px-3 print:bg-none print:px-0 print:border-t print:border-black">
+            <span class="text-sm font-bold text-gray-700 print:text-black uppercase">Grand Total</span>
+            <span class="text-xl font-black text-blue-700 print:text-black print:text-lg">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</span>
         </div>
-        
-        <div class="total-row flex">
-            <span>Bayar ({{ $transaksi->metode_bayar }})</span>
-            <span>{{ number_format($transaksi->nominal_bayar ?? $transaksi->total, 0, ',', '.') }}</span>
+
+        <div class="flex justify-between text-xs px-3 print:px-0">
+            <span class="text-gray-500 uppercase print:text-black">Bayar ({{ $transaksi->metode_bayar }})</span>
+            <span class="font-bold text-gray-800 print:text-black">Rp {{ number_format($transaksi->nominal_bayar ?? $transaksi->total, 0, ',', '.') }}</span>
         </div>
-        
+
         @if($transaksi->kembalian > 0)
-            <div class="total-row flex">
-                <span>Kembali</span>
-                <span>{{ number_format($transaksi->kembalian, 0, ',', '.') }}</span>
+            <div class="flex justify-between text-xs px-3 print:px-0">
+                <span class="text-gray-500 print:text-black">Uang Kembali</span>
+                <span class="font-bold text-blue-600 print:text-black">Rp {{ number_format($transaksi->kembalian, 0, ',', '.') }}</span>
             </div>
         @endif
     </div>
 
-    <div class="divider"></div>
-
-    <div class="footer text-center">
-        <div class="font-bold uppercase">-- Terima Kasih --</div>
-        <div>Barang yang sudah dibeli <br> tidak dapat ditukar</div>
+    <!-- Footer: Mewah & Professional -->
+    <div class="text-center">
+        <div class="inline-block px-4 py-1 bg-gray-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-3 print:bg-none print:text-black print:border-black print:border print:rounded-none">-- Terima Kasih --</div>
+        <div class="text-[9px] text-gray-400 leading-relaxed italic print:text-black">Semoga hari anda menyenangkan! <br> Barang yang telah dibeli tidak dapat ditukar atau dikembalikan.</div>
     </div>
 
-    <!-- Interface Non-Cetak -->
-    <div class="no-print">
-        <button onclick="window.print()" class="btn btn-print">Cetak Struk</button>
-        <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="btn btn-back">Kembali</a>
+    <!-- Panel Tombol (HANYA LAYAR) -->
+    <div class="print:hidden mt-10 grid grid-cols-2 gap-3">
+        <button onclick="window.print()" class="flex items-center justify-center py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition transform hover:scale-[1.02]">
+            <i class="ri-printer-line mr-2"></i> Cetak Struk
+        </button>
+        <a href="{{ Auth::user()->role === 'kasir' ? route('pos.index') : route('transaksi.index') }}" class="flex items-center justify-center py-3 bg-gray-100 text-gray-700 rounded-xl font-bold border border-gray-200 hover:bg-gray-200 transition">
+            Kembali
+        </a>
     </div>
+</div>
 
-    <script>
-        // Auto print delay
-        window.onload = function() {
-            setTimeout(() => {
-                // window.print();
-            }, 500);
-        };
-    </script>
-</body>
-</html>
+<style>
+    /* DESAIN LAYAR TETAP MEWAH (Tailwind sudah handle) */
+
+    @media print {
+        /* CSS KHUSUS PRINTER THERMAL 58MM - AMAN & RAPI */
+        
+        /* 1. Reset Global */
+        body { background: white !important; margin: 0 !important; padding: 0 !important; }
+        
+        /* 2. Sembunyikan elemen dashboard */
+        header, nav, aside, footer, .print\:hidden,
+        body > div:not([id="receipt-container"]),
+        .min-h-screen { 
+            display: none !important; 
+        }
+
+        /* 3. Paksa Container ke format Pita 58mm */
+        #receipt-container {
+            width: 58mm !important;
+            max-width: 58mm !important;
+            min-width: 58mm !important;
+            margin: 0 !important;
+            padding: 3mm !important;
+            display: block !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            visibility: visible !important;
+            font-family: 'Courier New', Courier, monospace !important; /* Font Monospace untuk Kasir */
+        }
+
+        /* 4. Pastikan semua anak elemen muncul */
+        #receipt-container * { 
+            visibility: visible !important; 
+            color: black !important; 
+            text-shadow: none !important;
+            box-shadow: none !important;
+        }
+
+        /* 5. Grayscale Logo agar tidak Hitam Blok */
+        img { filter: grayscale(1) !important; opacity: 0.8 !important; }
+
+        @page {
+            size: 58mm auto; /* Biarkan panjangnya mengikuti isi */
+            margin: 0;
+        }
+    }
+</style>
+
+<script>
+    // Trigger print otomatis jika diinginkan
+    window.onload = function() {
+        // window.print();
+    };
+</script>
+@endsection
