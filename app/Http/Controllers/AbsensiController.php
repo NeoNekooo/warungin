@@ -101,13 +101,13 @@ public function index()
         $kasirs = User::where('role', 'kasir')->where('status', 1)->get();
         foreach ($kasirs as $k) {
             // Gunakan 'id' atau 'user_id' sesuai nama kolom primary key kamu
-            $absen = Absensi::where('user_id', $k->id) 
+            $absen = Absensi::where('user_id', $k->user_id) 
                             ->whereDate('waktu_scan', $now->toDateString())
                             ->first();
 
             if (!$absen) {
                 Absensi::create([
-                    'user_id' => $k->id,
+                    'user_id' => $k->user_id,
                     'waktu_scan' => $now,
                     'status' => 'alpa',
                     'keterangan' => 'Alpa: Tidak ada data masuk. (auto)'
