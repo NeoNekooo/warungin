@@ -115,8 +115,8 @@
             text-shadow: none !important;
         }
 
-        /* 5. Sembunyikan Tombol & Pesan Bawah saat cetak */
-        .mt-4, #print-button, a { 
+        /* 5. Sembunyikan Navigasi Bawah (Hanya tombol, bukan total belanja) */
+        .mt-4.flex.items-center.justify-between, #print-button, a[href*="pos"], a[href*="transaksi"] { 
             display: none !important; 
             visibility: hidden !important;
         }
