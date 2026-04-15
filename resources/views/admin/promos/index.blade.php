@@ -58,7 +58,6 @@
                 {{-- Card Body --}}
                 <div class="p-5 space-y-3">
                     
-                    {{-- Detail Diskon --}}
                     <div class="flex items-center gap-4">
                         <div class="p-3 rounded-full bg-yellow-100 text-yellow-700 flex-shrink-0">
                             <i class="ri-money-dollar-circle-fill text-2xl"></i>
