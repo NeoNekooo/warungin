@@ -604,10 +604,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 window.snap.pay(data.snap_token, {
-                    onSuccess: function(result){
+                    onSuccess: async function(result){
                         console.log('Midtrans onSuccess:', result); // Added log
                         showToast('Pembayaran Lunas!');
                         if(data.transaksi_id) {
+                            try {
+                                await fetch('{{ route("pos.midtransSuccess") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    },
+                                    body: JSON.stringify({ transaksi_id: data.transaksi_id })
+                                });
+                            } catch (e) {
+                                console.error('Failed to update status', e);
+                            }
+
                             const invoiceUrl = `/transaksi/${data.transaksi_id}/invoice`;
                             console.log('Opening invoice for Midtrans onSuccess:', invoiceUrl); // Added log
                             window.open(invoiceUrl, '_blank');

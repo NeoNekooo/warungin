@@ -120,6 +120,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::get('/pos/search', [PosController::class, 'search'])->name('pos.search');
         Route::post('/pos/pay', [PosController::class, 'pay'])->name('pos.pay');
+        Route::post('/pos/midtrans-success', [PosController::class, 'midtransSuccess'])->name('pos.midtransSuccess');
     });
 
     // Owner specific dashboard

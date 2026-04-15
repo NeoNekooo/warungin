@@ -59,7 +59,18 @@ class PosController extends Controller
     public function search(Request $request)
     {
         $q = $request->query('q', '');
-        $products = Produk::where('nama_produk', 'like', "%{$q}%")->limit(20)->get(['produk_id','nama_produk','harga_jual','stok','gambar_url']);
+        $products = Produk::where('nama_produk', 'like', "%{$q}%")
+            ->where(function ($query) {
+                // Tampilkan semua kecuali yang beneran berstatus 'nonaktif'
+                // Ini jaga-jaga kalau statusnya null atau aktif (Pake a kecil/A besar)
+                $query->whereNull('status')
+                      ->orWhere('status', '!=', 'nonaktif');
+            })
+            // Urutkan stok 0 ke baris terakhir
+            ->orderByRaw('CASE WHEN stok <= 0 THEN 1 ELSE 0 END ASC')
+            ->orderBy('stok', 'desc')
+            ->limit(20)
+            ->get(['produk_id','nama_produk','harga_jual','stok','gambar_url']);
 
         // Convert gambar_url to full accessible URL (storage link) for the POS frontend
         $products = $products->map(function($p) {
@@ -229,6 +240,52 @@ class PosController extends Controller
                 'success' => false, 
                 'message' => 'Gagal terhubung ke Midtrans: ' . $e->getMessage()
             ], 400);
+        }
+    }
+
+    /**
+     * Update status transaksi secara sinkron setelah Midtrans sukses (Call via AJAX)
+     */
+    public function midtransSuccess(Request $request)
+    {
+        $request->validate([
+            'transaksi_id' => 'required|exists:transaksi,transaksi_id'
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $transaksi = Transaksi::find($request->transaksi_id);
+            
+            if ($transaksi && $transaksi->status !== 'selesai') {
+                $transaksi->status = 'selesai';
+                $transaksi->save();
+
+                // Logic: Kasih poin pelanggan (1 poin per 10rb)
+                if ($transaksi->pelanggan_id) {
+                    $pointsToAdd = floor($transaksi->total / 10000);
+                    if ($pointsToAdd > 0) {
+                        Pelanggan::where('pelanggan_id', $transaksi->pelanggan_id)->increment('poin', $pointsToAdd);
+                    }
+                }
+                
+                // Update atau Buat record Pembayaran jadi lunas
+                $pay = Pembayaran::where('transaksi_id', $transaksi->transaksi_id)->first();
+                if ($pay) {
+                    $pay->jumlah = (float) $transaksi->total;
+                    $pay->metode = 'midtrans';
+                    $pay->save();
+                }
+
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Status updated to selesai']);
+            }
+            
+            DB::rollBack();
+            return response()->json(['success' => true, 'message' => 'Already selesai or not found']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('POS Midtrans Success Update Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }
